@@ -1,5 +1,10 @@
 package org.compi.Lexical;
 
+/**
+ * Enum que representa las palabras clave del lenguaje en el análisis léxico.
+ * @author Enzo Palau
+ */
+
 public enum Keywords {
     pclass ,
     pimpl,
@@ -17,5 +22,7 @@ public enum Keywords {
     pself ,
     pdiv,
     pfor,
-    pin
+    pin,
+    pstart;
+
 }
