@@ -101,8 +101,6 @@ public class LexicalAnalyzer {
             advance();
         }
 
-        //IDENTIFICAR COMENTARIOS PARA IGNORARLOS
-
         //inicializo las posiciones del token actual antes de consumir caracteres
         tokenStartLine   = line;
         tokenStartColumn = column;
@@ -112,7 +110,7 @@ public class LexicalAnalyzer {
 
         switch (current) {
 
-            // ── Símbolos de un solo carácter ──────────────────────────────────
+            //  Símbolos de un solo carácter que se reconocen inmediatamente
             case Symbols.OPEN_PAREN:    consume(); return makeToken(String.valueOf(Symbols.openParen),    flushBuffer());
             case Symbols.CLOSE_PAREN:   consume(); return makeToken(String.valueOf(Symbols.closeParen),   flushBuffer());
             case Symbols.OPEN_BRACE:    consume(); return makeToken(String.valueOf(Symbols.openBrace),    flushBuffer());
@@ -123,13 +121,120 @@ public class LexicalAnalyzer {
             case Symbols.COMMA:         consume(); return makeToken(String.valueOf(Symbols.comma),         flushBuffer());
             case Symbols.DOT:           consume(); return makeToken(String.valueOf(Symbols.dot),           flushBuffer());
             case Symbols.COLON:         consume(); return makeToken(String.valueOf(Symbols.colon),         flushBuffer());
-            //ver porque no se pueden usar las comillas simples y dobles para los tokens de quote y doubleQuote, respectivamente
-            //case Symbols.QUOTE:         consume(); return makeToken(String.valueOf(Symbols.quote),         flushBuffer());
-            //case Symbols.DOUBLE_QUOTE:  consume(); return makeToken(String.valueOf(Symbols.doubleQuote),  flushBuffer());
+
+            //simbolos que puden ser dobles
+
+            //quote y double quote
+
+            //operadores que pueden ser dobles o simples
+            case Operators.PLUS:
+                consume();
+                if (lookAhead == Operators.PLUS) {          // ++
+                    consume();
+                    return makeToken(String.valueOf(Operators.incrementOperator), flushBuffer());
+                }
+                return makeToken(String.valueOf(Operators.sumOperator), flushBuffer());
+
+            case Operators.MINUS:
+                consume();
+                if (lookAhead == Operators.MINUS) {         // --
+                    consume();
+                    return makeToken(String.valueOf(Operators.decrementOperator), flushBuffer());
+                }
+                return makeToken(String.valueOf(Operators.substractionOperator), flushBuffer());
+
+            case Operators.STAR:
+                consume();
+                return makeToken(String.valueOf(Operators.multiplicationOperator), flushBuffer());
+
+            // Pueden ser comentarios o operadores  de división
+            case Operators.SLASH:
+                //comentario de una sola línea
+                consume();
+                if (lookAhead == Operators.SLASH) {
+                    // Ignorar el resto de la línea
+                    while (lookAhead != -1 && lookAhead != '\n') advance();
+                    return nextToken(); // el resultado de este nextoken es el siguiente token después del comentario
+                }
+                // comentario de varias líneas
+                if (lookAhead == '*') {
+                    advance(); // consume el '*'
+                    while (lookAhead != -1) {
+                        if (lookAhead == '*') {
+                            advance();
+                            if (lookAhead == '/') {
+                                advance(); // consume el '/'
+                                return nextToken(); // el resultado de este nextoken es el siguiente token después del comentario
+                            }
+                        } else {
+                            advance();
+                        }
+                    }
+                    throw new LexicalExeptions(
+                            "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: Comentario multilinea no cerrado |\n"
+                                    + "se esperaba */ para cerrar el comentario ");
+                }
+                return makeToken(String.valueOf(Operators.divOperator), flushBuffer());
+
+
+            case Operators.EQUAL:
+                consume();
+                if (lookAhead == Operators.EQUAL) {         // ==
+                    consume();
+                    return makeToken(String.valueOf(Operators.equalOperator), flushBuffer());
+                }
+                return makeToken(String.valueOf(Operators.assignmentOperator), flushBuffer());
+
+            case Operators.BANG:
+                consume();
+                if (lookAhead == Operators.EQUAL) {         // !=
+                    consume();
+                    return makeToken(String.valueOf(Operators.notEqualOperator), flushBuffer());
+                }
+                return makeToken(String.valueOf(Operators.notOperator), flushBuffer());
+
+            case Operators.GREATER:
+                consume();
+                if (lookAhead == Operators.EQUAL) {         // >=
+                    consume();
+                    return makeToken(String.valueOf(Operators.greaterThanOrEqualOperator), flushBuffer());
+                }
+                return makeToken(String.valueOf(Operators.greaterThanOperator), flushBuffer());
+
+            case Operators.LESS:
+                consume();
+                if (lookAhead == Operators.EQUAL) {         // <=
+                    consume();
+                    return makeToken(String.valueOf(Operators.lessThanOrEqualOperator), flushBuffer());
+                }
+                return makeToken(String.valueOf(Operators.lessThanOperator), flushBuffer());
+
+            case Operators.AMPERSAND:
+                consume();
+                if (lookAhead == Operators.AMPERSAND) {     // &&
+                    consume();
+                    return makeToken(String.valueOf(Operators.andOperator), flushBuffer());
+                }
+                throw new LexicalExeptions(
+                        "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: Se esperaba &&, se dio un & |\n"
+                                + "no es un operador valido ");
+
+            case Operators.PIPE:
+                consume();
+                if (lookAhead == Operators.PIPE) {          // ||
+                    consume();
+                    return makeToken(String.valueOf(Operators.orOperator), flushBuffer());
+                }
+                throw new LexicalExeptions(
+                        "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: Se esperaba ||, se dio |  |\n"
+                                + "no es un operador valido ");
+
+
         }
 
-
-        return null;
+        // esto es temporal hago un token vacio solo para que no explote con algo no reconocido aun
+        consume(); // avanza para no quedar atrapado aca
+        return makeToken("UNRECOGNIZED", String.valueOf(current));
     }}
 
 

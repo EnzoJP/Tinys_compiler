@@ -39,5 +39,6 @@ public enum Operators {
     public static final char GREATER   = '>';
     public static final char LESS      = '<';
     public static final char AMPERSAND = '&';
+    public static final char PIPE      = '|';
 }
 
