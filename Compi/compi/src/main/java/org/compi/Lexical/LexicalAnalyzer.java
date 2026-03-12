@@ -11,6 +11,7 @@ import java.util.LinkedList;
  * Lee el archivo fuente carácter a carácter usando un BufferedReader.
  * Usa una LinkedList como buffer del lexema actual y un lookAhead para el siguiente carácter.
  * @author Enzo Palau
+ * @author Luciana Puentes
  */
 public class LexicalAnalyzer {
 
@@ -154,18 +155,24 @@ public class LexicalAnalyzer {
                 if (lookAhead == Operators.SLASH) {
                     // Ignorar el resto de la línea
                     while (lookAhead != -1 && lookAhead != '\n') advance();
+                    flushBuffer();
                     return nextToken(); // el resultado de este nextoken es el siguiente token después del comentario
                 }
                 // comentario de varias líneas
                 if (lookAhead == '*') {
                     advance(); // consume el '*'
                     while (lookAhead != -1) {
+                        if (lookAhead=='\n'){
+                            line++;
+                        }
                         if (lookAhead == '*') {
                             advance();
                             if (lookAhead == '/') {
                                 advance(); // consume el '/'
+                                flushBuffer();
                                 return nextToken(); // el resultado de este nextoken es el siguiente token después del comentario
                             }
+
                         } else {
                             advance();
                         }
@@ -234,6 +241,7 @@ public class LexicalAnalyzer {
 
         // esto es temporal hago un token vacio solo para que no explote con algo no reconocido aun
         consume(); // avanza para no quedar atrapado aca
+        flushBuffer();
         return makeToken("UNRECOGNIZED", String.valueOf(current));
     }}
 
