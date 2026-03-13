@@ -1,7 +1,7 @@
 package org.compi.etapas;
 
 import org.compi.Lexical.LexicalAnalyzer;
-import org.compi.Lexical.LexicalExeptions;
+import org.compi.Lexical.LexicalExceptions;
 import org.compi.Lexical.token;
 
 import java.io.File;
@@ -78,9 +78,7 @@ public class Etapa1 {
                         tk.getColumn());
             }
 
-        } catch (LexicalExeptions e) {
-            out.println("ERROR: LEXICO");
-            out.println("| NUMERO DE LINEA (NUMERO DE COLUMNA) | DESCRIPCION: |");
+        } catch (LexicalExceptions e) {
             out.println(e.getMessage());
 
         } finally {

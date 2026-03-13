@@ -37,7 +37,7 @@ public class LexicalAnalyzer {
             this.sourceFile = sourceFile;
             advance(); // carga el primer carácter en lookAhead
         } catch (IOException e) {
-            throw new LexicalExeptions("ERROR: No se puede abrir el archivo fuente: " + sourceFile.getName());
+            throw new LexicalExceptions("ERROR: No se puede abrir el archivo fuente: " + sourceFile.getName());
         }
     }
 
@@ -81,6 +81,182 @@ public class LexicalAnalyzer {
         return false;
     }
 
+    /** Lee un entero o lanza excepción si es un identificador inválido que empieza con dígito. */
+    private token readInteger() {
+        //consume dígitos mientras los haya
+        while (lookAhead != -1 && Character.isDigit((char) lookAhead)) {
+            consume();
+        }
+        // si inmediatamente sigue una letra es un identificador inválido porque no puede empezar con un dígito un identificador
+        if (lookAhead != -1 && (Character.isLetter((char) lookAhead) || lookAhead == '_')) {
+            consume();
+            throw new LexicalExceptions(
+                    "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: se dio num + chars, se esperaba o un entero o un identificador |\n"
+                            + "| No es identificador valido |");
+        }
+        return makeToken(String.valueOf(Literals.IntegerLiteral), flushBuffer());
+    }
+
+    /** Lee un literal de carácter entre comillas simples. */
+    private token readCharLiteral() {
+        advance(); // consume la ' de inicio pero no la agrega al buffer por eso no uso consume()
+        if (lookAhead == -1 || lookAhead == '\n' || lookAhead == '\0') {
+            throw new LexicalExceptions(
+                    "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: se dio un EOF o un char invalido se esperaba un char |\n"
+                            + " no es un char literal valido |");
+        }
+
+        // casos especiales
+        if (lookAhead == '\\') {
+            advance(); // saltamos el backslash
+
+            if (lookAhead == Symbols.QUOTE) {
+                buffer.add('\''); // el valor real del char
+                advance();
+            }
+            else if (lookAhead == '\\') {
+                buffer.add('\\');
+                advance();
+            }
+            else {
+                throw new LexicalExceptions(
+                        "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | ESCAPE INVALIDO EN CHAR |"
+                );
+            }
+        } else {
+            if (lookAhead == Symbols.QUOTE) {
+                throw new LexicalExceptions(
+                        "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: caracter literal vacío o comilla no escapada |\n"
+                                + "| CARACTER LITERAL NO VALIDO |");
+            }
+            consume();
+        }
+
+        if (lookAhead != Symbols.QUOTE) {
+            throw new LexicalExceptions(
+                    "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: se esperaba ' |\n"
+                            + "|CARACTER LITERAL NO VALIDO|");
+        }
+        advance(); // consume la ' de cierre sin agregarla al buffer
+        return makeToken(String.valueOf(Literals.StringLiteral), flushBuffer());
+    }
+
+    /** Lee un literal de cadena entre comillas dobles. */
+    private token readString() {
+        advance(); // consume "
+
+        while (lookAhead != -1 && lookAhead != '\n' && lookAhead != '\0') {
+
+            if (lookAhead == '\\') {
+                advance();
+
+                if (lookAhead == '\\') {        // \\ -> \
+                    buffer.add('\\');
+                    advance();
+                    continue;
+                }
+
+                if (lookAhead == '"') {         // \" -> "
+                    buffer.add('"');
+                    advance();
+                    continue;
+                }
+
+                if (lookAhead == 'n') {         // \n -> newline
+                    buffer.add('\\');
+                    buffer.add('n');
+                    advance();
+                    continue;
+                }
+
+                if (lookAhead == 't') {         // \t -> tab
+                    buffer.add('\\');
+                    buffer.add('t');
+                    advance();
+                    continue;
+                }
+
+                throw new LexicalExceptions(
+                        "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | ESCAPE INVALIDO EN STRING |"
+                );
+            }
+            if (lookAhead == '"') {
+                break; // cierre real
+            }
+
+            consume();
+        }
+        if (lookAhead != Symbols.DOUBLE_QUOTE) {
+            throw new LexicalExceptions(
+                    "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | CADENA NO CERRADA |"
+            );
+        }
+        advance(); // consume la " final
+        return makeToken(String.valueOf(Literals.StringLiteral), flushBuffer());
+    }
+
+    /** Lee un identificador o palabra reservada. */
+    private token readIdentifierOrKeyword() {
+
+        //me aseguro al menos de que el primer carácter sea letra o _ para ser mas seguro
+        char charCurrent = (char) lookAhead;
+
+        if (lookAhead == -1 || lookAhead == '\n' || lookAhead == '\0'
+                || (!Character.isLetter((char) lookAhead) && lookAhead != '_')) {
+            consume();
+            charCurrent = (char) lookAhead;
+            throw new LexicalExceptions(
+                    "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: se esperaba un identificador o palabra reservada que empiece con letra o _ |\n"
+                            + " no es un identificador valido |");
+        }
+
+        while (lookAhead != -1 && lookAhead != '\n' && lookAhead != '\0'
+                && (Character.isLetterOrDigit((char) lookAhead) || lookAhead == '_')) {
+            charCurrent = (char) lookAhead;
+            consume();
+        }
+
+        // caso de que el identificador tenga un dígito raro que no sea letra o dígito o _
+        if (!Character.isLetterOrDigit((charCurrent)) && charCurrent != '_') {
+            consume();
+            throw new LexicalExceptions(
+                    "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: se esperaba un identificador o palabra reservada que contenga solo letras, dígitos o _ |\n"
+                            + " no es un identificador valido |" + "se encontró un carácter no reconocido: '" + (char) lookAhead + "' |");
+        }
+
+        String lexeme = flushBuffer();
+        if (isKeyword(lexeme)) {
+
+            switch (lexeme){
+                case "class": return makeToken(String.valueOf(Keywords.pclass), lexeme);
+                case "impl": return makeToken(String.valueOf(Keywords.pimpl), lexeme);
+                case "else": return makeToken(String.valueOf(Keywords.pelse), lexeme);
+                case "if": return makeToken(String.valueOf(Keywords.pif), lexeme);
+                case "false": return makeToken(String.valueOf(Keywords.pfalse), lexeme);
+                case "true": return makeToken(String.valueOf(Keywords.ptrue), lexeme);
+                case "while": return makeToken(String.valueOf(Keywords.pwhile), lexeme);
+                case "ret": return makeToken(String.valueOf(Keywords.pret), lexeme);
+                case "nil": return makeToken(String.valueOf(Keywords.pnil), lexeme);
+                case "new": return makeToken(String.valueOf(Keywords.pnew), lexeme);
+                case "fn": return makeToken(String.valueOf(Keywords.pfn), lexeme);
+                case "st": return makeToken(String.valueOf(Keywords.pst), lexeme);
+                case "pub": return makeToken(String.valueOf(Keywords.ppub), lexeme);
+                case "self": return makeToken(String.valueOf(Keywords.pself), lexeme);
+                case "div": return makeToken(String.valueOf(Keywords.pdiv), lexeme);
+                case "for": return makeToken(String.valueOf(Keywords.pfor), lexeme);
+                case "in": return makeToken(String.valueOf(Keywords.pin), lexeme);
+                case "start": return makeToken(String.valueOf(Keywords.pstart), lexeme);
+            }
+
+        }
+
+        // identificador de clase que empieza con mayúscula
+        if (Character.isUpperCase(lexeme.charAt(0))) {
+            return makeToken(String.valueOf(Identificators.ClassID), lexeme);
+        }
+        return makeToken(String.valueOf(Identificators.ObjectID), lexeme);
+    }
+
 
     /**
      * Retorna el siguiente token del archivo fuente.
@@ -122,10 +298,6 @@ public class LexicalAnalyzer {
             case Symbols.COMMA:         consume(); return makeToken(String.valueOf(Symbols.comma),         flushBuffer());
             case Symbols.DOT:           consume(); return makeToken(String.valueOf(Symbols.dot),           flushBuffer());
             case Symbols.COLON:         consume(); return makeToken(String.valueOf(Symbols.colon),         flushBuffer());
-
-            //simbolos que puden ser dobles
-
-            //quote y double quote
 
             //operadores que pueden ser dobles o simples
             case Operators.PLUS:
@@ -177,7 +349,7 @@ public class LexicalAnalyzer {
                             advance();
                         }
                     }
-                    throw new LexicalExeptions(
+                    throw new LexicalExceptions(
                             "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: Comentario multilinea no cerrado |\n"
                                     + "se esperaba */ para cerrar el comentario ");
                 }
@@ -222,7 +394,7 @@ public class LexicalAnalyzer {
                     consume();
                     return makeToken(String.valueOf(Operators.andOperator), flushBuffer());
                 }
-                throw new LexicalExeptions(
+                throw new LexicalExceptions(
                         "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: Se esperaba &&, se dio un & |\n"
                                 + "no es un operador valido ");
 
@@ -232,18 +404,37 @@ public class LexicalAnalyzer {
                     consume();
                     return makeToken(String.valueOf(Operators.orOperator), flushBuffer());
                 }
-                throw new LexicalExeptions(
+                throw new LexicalExceptions(
                         "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: Se esperaba ||, se dio |  |\n"
                                 + "no es un operador valido ");
 
+            // literales enteros
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
+                return readInteger();
 
+            // strings o char
+            case Symbols.DOUBLE_QUOTE:
+                return readString();
+
+            case Symbols.QUOTE:
+                return readCharLiteral();
+
+            case '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+                 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y','Z':
+                return readIdentifierOrKeyword();
         }
 
-        // esto es temporal hago un token vacio solo para que no explote con algo no reconocido aun
-        consume(); // avanza para no quedar atrapado aca
-        flushBuffer();
-        return makeToken("UNRECOGNIZED", String.valueOf(current));
-    }}
+        // si no se reconoce el carácter, lanza excepción, en teoria no debería pasar porque el switch cubre todos los casos posibles de caracteres válidos
+        consume();
+        throw new LexicalExceptions(
+                "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: Se encontró un carácter no reconocido: '" + current + "' |\n"
+                        + "no es un token valido ");
+
+    }
+}
 
 
 
