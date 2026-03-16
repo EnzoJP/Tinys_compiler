@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -30,6 +31,7 @@ public class LexicalAnalyzer {
     // columna donde empezó el token actual
     private int tokenStartColumn;
     private int tokenStartLine;
+
 
     public LexicalAnalyzer(File sourceFile) {
         try {
@@ -197,7 +199,7 @@ public class LexicalAnalyzer {
 
     /** Lee un identificador o palabra reservada. */
     private token readIdentifierOrKeyword() {
-
+        System.out.println("entra a id");
         //me aseguro al menos de que el primer carácter sea letra o _ para ser mas seguro
         char charCurrent = (char) lookAhead;
 
@@ -219,6 +221,7 @@ public class LexicalAnalyzer {
         // caso de que el identificador tenga un dígito raro que no sea letra o dígito o _
         if (!Character.isLetterOrDigit((charCurrent)) && charCurrent != '_') {
             consume();
+            System.out.println("excepcion char");
             throw new LexicalExceptions(
                     "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: se esperaba un identificador o palabra reservada que contenga solo letras, dígitos o _ |\n"
                             + " no es un identificador valido |" + "se encontró un carácter no reconocido: '" + (char) lookAhead + "' |");
@@ -263,7 +266,7 @@ public class LexicalAnalyzer {
      * retorna null si se llega al final del archivo.
      * Lanza LexicalExeptions ante un error léxico.
      */
-    public token nextToken() {
+    public token nextToken() throws LexicalExceptions {
         // EOF
         if (lookAhead == -1) {
             return null;
@@ -284,6 +287,7 @@ public class LexicalAnalyzer {
 
         // el (char) hace que lookAhead se interprete como un carácter aunque venga un ascii o un -1 (EOF)
         char current = (char) lookAhead;
+
 
         switch (current) {
 
@@ -326,16 +330,35 @@ public class LexicalAnalyzer {
                 consume();
                 if (lookAhead == Operators.SLASH) {
                     // Ignorar el resto de la línea
-                    while (lookAhead != -1 && lookAhead != '\n') advance();
-                    flushBuffer();
-                    return nextToken(); // el resultado de este nextoken es el siguiente token después del comentario
+                        while (lookAhead != -1 && lookAhead != '\n') {
+                            column++;
+                            if (lookAhead > 127) {
+                                throw new LexicalExceptions(
+                                        "| LINEA " + tokenStartLine + " (COLUMNA " + column +
+                                                ") | DESCRIPCION: Se encontró un carácter no reconocido: '" + (char) lookAhead + "' |\n"
+                                                + "no es un token valido ");
+                            }
+
+                            advance();
+                        }
+
+                        flushBuffer();
+                        return nextToken();
                 }
                 // comentario de varias líneas
                 if (lookAhead == '*') {
                     advance(); // consume el '*'
-                    while (lookAhead != -1) {
+                    while (lookAhead != -1 ) {
+                        column++;
                         if (lookAhead=='\n'){
                             line++;
+                            column=0;
+                        }
+                        // validar caracteres permitidos
+                        if (lookAhead>127) {
+                            throw new LexicalExceptions(
+                                    "| LINEA " + line + " (COLUMNA " + column + ") | DESCRIPCION: Se encontró un carácter no reconocido: '" + current + "' |\n"
+                                            + "no es un token valido ");
                         }
                         if (lookAhead == '*') {
                             advance();
@@ -424,6 +447,7 @@ public class LexicalAnalyzer {
                  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
                  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
                  'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y','Z':
+
                 return readIdentifierOrKeyword();
         }
 

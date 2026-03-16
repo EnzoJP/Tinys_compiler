@@ -79,6 +79,7 @@ public class Etapa1 {
             }
 
         } catch (LexicalExceptions e) {
+            System.out.println("catch etapa1");
             out.println(e.getMessage());
 
         } finally {
