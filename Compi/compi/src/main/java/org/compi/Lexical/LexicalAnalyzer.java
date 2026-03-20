@@ -99,56 +99,18 @@ public class LexicalAnalyzer {
         return makeToken(String.valueOf(Literals.IntegerLiteral), flushBuffer());
     }
 
-    /** Lee un literal de carácter entre comillas simples. */
-    private token readCharLiteral() {
-        advance(); // consume la ' de inicio pero no la agrega al buffer por eso no uso consume()
-        if (lookAhead == -1 || lookAhead == '\n' || lookAhead == '\0') {
-            throw new LexicalExceptions(
-                    "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: se dio un EOF o un char invalido se esperaba un char |\n"
-                            + " no es un char literal valido |");
-        }
-
-        // casos especiales
-        if (lookAhead == '\\') {
-            advance(); // saltamos el backslash
-
-            if (lookAhead == Symbols.QUOTE) {
-                buffer.add('\''); // el valor real del char
-                advance();
-            }
-            else if (lookAhead == '\\') {
-                buffer.add('\\');
-                advance();
-            }
-            else {
-                throw new LexicalExceptions(
-                        "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | ESCAPE INVALIDO EN CHAR |"
-                );
-            }
-        } else {
-            if (lookAhead == Symbols.QUOTE) {
-                throw new LexicalExceptions(
-                        "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: caracter literal vacío o comilla no escapada |\n"
-                                + "| CARACTER LITERAL NO VALIDO |");
-            }
-            consume();
-        }
-
-        if (lookAhead != Symbols.QUOTE) {
-            throw new LexicalExceptions(
-                    "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | DESCRIPCION: se esperaba ' |\n"
-                            + "|CARACTER LITERAL NO VALIDO|");
-        }
-        advance(); // consume la ' de cierre sin agregarla al buffer
-        return makeToken(String.valueOf(Literals.StringLiteral), flushBuffer());
-    }
-
     /** Lee un literal de cadena entre comillas dobles. */
     private token readString() {
         advance(); // consume "
-
+        int len =0;
         while (lookAhead != -1 && lookAhead != '\n' && lookAhead != '\0') {
+            len=len+1;
+            if (len>1024) {
+                throw new LexicalExceptions(
+                        "| LINEA " + tokenStartLine + " (COLUMNA " + tokenStartColumn + ") | STRING DE LONGITUD MAYOR A 1024|"
+                );
 
+            }
             if (lookAhead == '\\') {
                 advance();
 
@@ -199,7 +161,6 @@ public class LexicalAnalyzer {
 
     /** Lee un identificador o palabra reservada. */
     private token readIdentifierOrKeyword() {
-        System.out.println("entra a id");
         //me aseguro al menos de que el primer carácter sea letra o _ para ser mas seguro
         char charCurrent = (char) lookAhead;
 
@@ -440,8 +401,6 @@ public class LexicalAnalyzer {
             case Symbols.DOUBLE_QUOTE:
                 return readString();
 
-            case Symbols.QUOTE:
-                return readCharLiteral();
 
             case '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
                  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
