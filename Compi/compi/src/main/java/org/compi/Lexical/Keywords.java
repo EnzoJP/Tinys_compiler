@@ -51,9 +51,10 @@ public enum Keywords {
     public static final String PFOR     = "for";
     public static final String PIN      = "in";
     public static final String PSTART   = "start";
-    public static final String PSTR     = "str";
+    public static final String PSTR     = "Str";
     public static final String PVOID    = "void";
-    public static final String PINT     = "int";
-    public static final String PBOOL    = "bool";
+    public static final String PINT     = "Int";
+    public static final String PBOOL    = "Bool";
+    public static final String PARRAY   = "Array";
 
 }
