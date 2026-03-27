@@ -23,7 +23,13 @@ public enum Keywords {
     pdiv,
     pfor,
     pin,
-    pstart;
+    pstart,
+    pstr,
+    pvoid,
+    pint,
+    pbool,
+    parray;
+
 
 
     // constantes para las palabras clave para comparar con los tokens
@@ -45,5 +51,9 @@ public enum Keywords {
     public static final String PFOR     = "for";
     public static final String PIN      = "in";
     public static final String PSTART   = "start";
+    public static final String PSTR     = "str";
+    public static final String PVOID    = "void";
+    public static final String PINT     = "int";
+    public static final String PBOOL    = "bool";
 
 }

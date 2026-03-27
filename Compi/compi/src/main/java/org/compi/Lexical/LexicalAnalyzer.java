@@ -19,7 +19,7 @@ public class LexicalAnalyzer {
     private final File sourceFile;
     private static final String[] KEYWORDS = {
             "class", "impl", "else", "if", "false", "true", "while", "ret",
-            "nil", "new", "fn", "st", "pub", "self", "div", "for", "in","start"
+            "nil", "new", "fn", "st", "pub", "self", "div", "for", "in","start", "Str", "void", "Int", "Bool", "Array"
     };
     private final BufferedReader reader;   // lector del archivo fuente
     private final LinkedList<Character> buffer = new LinkedList<>(); // buffer del lexema actual
@@ -210,12 +210,18 @@ public class LexicalAnalyzer {
                 case "for": return makeToken(String.valueOf(Keywords.pfor), lexeme);
                 case "in": return makeToken(String.valueOf(Keywords.pin), lexeme);
                 case "start": return makeToken(String.valueOf(Keywords.pstart), lexeme);
+                case "Str": return makeToken(String.valueOf(Keywords.pstr), lexeme);
+                case "void": return makeToken(String.valueOf(Keywords.pvoid), lexeme);
+                case "Int": return makeToken(String.valueOf(Keywords.pint), lexeme);
+                case "Bool": return makeToken(String.valueOf(Keywords.pbool), lexeme);
+                case "Array": return makeToken(String.valueOf(Keywords.parray), lexeme);
             }
 
         }
 
         // identificador de clase que empieza con mayúscula
         if (Character.isUpperCase(lexeme.charAt(0))) {
+
             return makeToken(String.valueOf(Identificators.ClassID), lexeme);
         }
         return makeToken(String.valueOf(Identificators.ObjectID), lexeme);
