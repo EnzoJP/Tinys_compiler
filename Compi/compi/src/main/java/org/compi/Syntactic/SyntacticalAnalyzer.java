@@ -505,7 +505,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpUnF⟩::= Int closeParen |  ⟨OperandoF⟩
+     * ⟨ExpUnF⟩::= Int closeParen |  ⟨OperandoF⟩ | ⟨Expresion⟩ closeParen ⟨ExpresionParentizadaF⟩
      */
 
     public void ExpUnF() {
@@ -583,13 +583,7 @@ public class SyntacticalAnalyzer {
 
     }
 
-    /**
-     * ⟨ExpresionParentizada⟩::= openParen  ⟨Expresion⟩ closeParen ⟨ExpresionParentizadaF⟩
-     */
 
-    public void expresionParentizada() {
-
-    }
 
     /**
      * ⟨ExpresionParentizadaF⟩::= ⟨Encadenado⟩  | λ
