@@ -29,6 +29,7 @@ public class Etapa2 {
 
 
         SyntacticalAnalyzer syntacticAnalyzer = new SyntacticalAnalyzer(sourceFile);
+        syntacticAnalyzer.program();
 
 
 }

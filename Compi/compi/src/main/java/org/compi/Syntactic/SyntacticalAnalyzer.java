@@ -4,6 +4,7 @@ import org.compi.Lexical.LexicalAnalyzer;
 import org.compi.Lexical.token;
 import java.io.File;
 import java.util.List;
+import org.compi.Syntactic.SyntacticExceptions;
 
 /**
  * Clase que representa el analizador Sintáctico
@@ -23,7 +24,7 @@ public class SyntacticalAnalyzer {
     * Metodo que se encarga de ver el no terminal que se esta analizando y comparar el token recibido con el token esperado
      * (que puede ser una lista, ya que puede tener varios SIGUIENTES)
      */
-    public void noTerminal (token received , List<String> expected) {
+    public void siguienteTerminal (token received , List<String> expected) throws SyntacticExceptions {
 
         String receivedType = received.getType();
 
@@ -34,6 +35,9 @@ public class SyntacticalAnalyzer {
                 return;
             }
         }
+        // no se encontró el token esperado
+        throw new SyntacticExceptions("ERROR SINTACTICO Se esperaba uno de los siguientes tokens: " + expected + ". Se encontró '" + received.getLexeme() + "' en la línea " + received.getLine() + ", columna " + received.getColumn());
+
     }
 
     /**
@@ -49,6 +53,7 @@ public class SyntacticalAnalyzer {
             System.err.println("ERROR SINTACTICO Se esperaba el final del archivo.");
         }else {
             System.out.println("Análisis sintáctico completado sin errores.");
+            //llamar semantico
         }
 
     }
@@ -58,18 +63,26 @@ public class SyntacticalAnalyzer {
      */
 
     public void start() {
-        tokenAct = lexicalAnalyzer.nextToken();
-        noTerminal(tokenAct, List.of("pstart"));
+        siguienteTerminal(tokenAct, List.of("pstart"));
         bloqueMetodo();
-
     }
 
     /**
      * ⟨Lista-Definiciones⟩ ::= <Class> ⟨Lista-Definiciones⟩ | <Impl> ⟨Lista-Definiciones⟩ |  λ
      */
 
-    public void listaDefiniciones() {
-
+    public void listaDefiniciones() throws SyntacticExceptions  {
+        if (tokenAct.getType().equals("pclass")) {
+            Class();
+            listaDefiniciones();
+        } else if (tokenAct.getType().equals("pimpl")) {
+            impl();
+            listaDefiniciones();
+        } else if (tokenAct.getType().equals("pstart")) {
+            return;
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'class', 'impl' o 'start'. Se encontro " + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine() + ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
