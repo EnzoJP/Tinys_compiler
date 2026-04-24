@@ -7,7 +7,7 @@ import java.util.List;
 import org.compi.Syntactic.SyntacticExceptions;
 
 /**
- * Clase que representa el analizador Sintáctico
+ * Clase que representa el analizador Sintactico
  * @author Enzo Palau
  * @author Luciana Puentes
  */
@@ -17,7 +17,7 @@ public class SyntacticalAnalyzer {
     private LexicalAnalyzer lexicalAnalyzer;
 
     public SyntacticalAnalyzer(File sourceFile) {
-        LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(sourceFile);
+        this.lexicalAnalyzer = new LexicalAnalyzer(sourceFile);
     }
 
     /**
@@ -34,13 +34,13 @@ public class SyntacticalAnalyzer {
                 return;
             }
         }
-        // no se encontró el token esperado
+        // no se encontro el token esperado
         throw new SyntacticExceptions("ERROR SINTACTICO Se esperaba uno de los siguientes tokens: " + expected + ". Se encontró '" + received.getLexeme() + "' en la línea " + received.getLine() + ", columna " + received.getColumn());
 
     }
 
     /**
-     * ⟨program⟩ ::=  ⟨Lista-Definiciones⟩ ⟨Start⟩
+     * <program> ::=  <Lista-Definiciones> <Start>
      */
 
     public void program() {
@@ -62,7 +62,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Start⟩ ::= pstart ⟨Bloque-Método⟩
+     * <Start> ::= pstart <Bloque-Metodo>
      */
 
     public void start() {
@@ -71,7 +71,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Lista-Definiciones⟩ ::= <Class> ⟨Lista-Definiciones⟩ | <Impl> ⟨Lista-Definiciones⟩ |  λ
+     * <Lista-Definiciones> ::= <Class> <Lista-Definiciones> | <Impl> <Lista-Definiciones> |  lambda
      */
 
     public void listaDefiniciones() throws SyntacticExceptions  {
@@ -89,7 +89,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Class⟩ ::=  pclass classID <ClassF>
+     * <Class> ::=  pclass classID <ClassF>
      */
 
     public void Class() {
@@ -99,7 +99,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <ClassF> :: = ⟨Herencia⟩ openBrace ⟨AtributoE⟩ closeBrace | openBrace ⟨AtributoE⟩ closeBrace
+     * <ClassF> :: = <Herencia> openParen <AtributoE> closeBrace | openBrace <AtributoE> closeBrace
      */
 
     public void classF() {
@@ -120,11 +120,11 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <AtributoE> :: = <Atributo> <AtributoE> | λ
+     * <AtributoE> :: = <Atributo> <AtributoE> | lambda
      */
 
     public void atributoE() {
-        List<String> primeros = List.of("ppub", "Str", "Bool", "Int", "ClassID", "parray");
+        List<String> primeros = List.of("ppub", "pstr", "pbool", "pint", "ClassID", "parray");
         if(primeros.contains(tokenAct.getType())){
             atributo();
             atributoE();
@@ -139,7 +139,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Impl⟩ ::= pimpl ClassID openBrace ⟨MiembroE⟩ closeBrace
+     * <Impl> ::= pimpl ClassID openBrace <MiembroE> closeBrace
      */
 
     public void impl() {
@@ -151,7 +151,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <MiembroE> ::= <Miembro> <MiembroE> | λ
+     * <MiembroE> ::= <Miembro> <MiembroE> | lambda
      */
 
     public void miembroE() {
@@ -168,7 +168,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Herencia⟩ ::= colon <Tipo>
+     * <Herencia> ::= colon <Tipo>
      */
 
     public void herencia() {
@@ -177,7 +177,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Miembro⟩ ::= <Metodo> | <Constructor>
+     * <Miembro> ::= <Metodo> | <Constructor>
      */
 
     public void miembro() {
@@ -192,7 +192,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Constructor ⟩ ::= dot ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+     * <Constructor> ::= dot <Argumentos-Formales> <Bloque-Metodo>
      */
 
     public void constructor() {
@@ -201,12 +201,12 @@ public class SyntacticalAnalyzer {
         bloqueMetodo();
     }
 
-    /** ⟨Atributo⟩ ::= ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ semicolon  | ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ semicolon
+    /** <Atributo> ::= <Visibilidad> <Tipo> <Lista-Declaracion-Variables> semicolon  | <Tipo> <Lista-Declaracion-Variables> semicolon
      *
      */
 
     public void atributo() {
-        List<String> primerosTipo=List.of("Str", "Bool", "Int", "ClassID", "parray");
+        List<String> primerosTipo=List.of("pstr", "pbool", "pint", "ClassID", "parray");
         if(tokenAct.getType().equals("ppub")){
             visibilidad();
             tipo();
@@ -223,11 +223,11 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Método⟩ ::= ⟨Forma-Método⟩ pfn <MetodoF> | pfn<MetodoF>
+     * <Metodo> ::= <Forma-Metodo> pfn <MetodoF> | pfn<MetodoF>
      */
 
     public void metodo() {
-        List<String> primerosFormaMetodo= List.of("Str","Bool" ,"Int","ClassID" ,"parray", "pvoid");
+        List<String> primerosFormaMetodo= List.of("pstr","pbool","pint","ClassID" ,"parray", "pvoid");
        if (primerosFormaMetodo.contains(tokenAct.getType())) {
            formaMetodo();
            siguienteTerminal(tokenAct,List.of("pfn"));
@@ -243,11 +243,11 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <MetodoF> ::= ⟨Tipo-Método⟩ objectID ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩ | objectID  ⟨Argumentos-Formales⟩ ⟨Bloque-Método⟩
+     * <MetodoF> ::= <Tipo-Metodo> objectID <Argumentos-Formales> <Bloque-Metodo> | objectID  <Argumentos-Formales> <Bloque-Metodo>
      */
 
     public void metodoF() {
-        List<String> primerosTipoMetodo =List.of("Str","Bool" ,"Int","ClassID" ,"parray", "pvoid");
+        List<String> primerosTipoMetodo =List.of("pstr","pbool" ,"pint","ClassID" ,"parray", "pvoid");
         if(primerosTipoMetodo.contains(tokenAct.getType())){
             tipoMetodo();
             siguienteTerminal(tokenAct,List.of("ObjectID"));
@@ -262,7 +262,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Visibilidad⟩ ::= ppub
+     * <Visibilidad> ::= ppub
      *
      */
 
@@ -271,7 +271,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Forma-Método⟩::= pst
+     * <Forma-Metodo>::= pst
      */
 
     public void formaMetodo() {
@@ -279,7 +279,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Bloque-Método⟩::= openBrace <Decl-Var-LocalesE> <SentenciaE> closeBrace
+     * <Bloque-Metodo>::= openBrace <Decl-Var-LocalesE> <SentenciaE> closeBrace
      */
 
     public void bloqueMetodo() {
@@ -290,12 +290,12 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <Decl-Var-LocalesE> ::=  <Decl-Var-Locales> <Decl-Var-LocalesE> | λ
+     * <Decl-Var-LocalesE> ::=  <Decl-Var-Locales> <Decl-Var-LocalesE> | lambda
      */
 
     // _____ ARREGLAR ______ COSO DE ID
     public void declVarLocalesE() {
-        List<String> primerosDeclVarLocales = List.of("Str","Bool","Int","ClassID","parray");
+        List<String> primerosDeclVarLocales = List.of("pstr","pbool","pint","ClassID","parray");
         List<String> siguientes = List.of("closeBrace", "semicolon", "id" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
         if(primerosDeclVarLocales.contains(tokenAct.getType())){
             declVarLocales();
@@ -311,48 +311,84 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <SentenciaE> ::=  <Sentencia> <SentenciaE>  | λ
+     * <SentenciaE> ::=  <Sentencia> <SentenciaE>  | lambda
      */
 
     public void sentenciaE() {
-
+        List<String> primerosSentencia = List.of("semicolon", "id" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
+        if (primerosSentencia.contains(tokenAct.getType())) {
+            sentencia();
+            sentenciaE();
+        } else if (tokenAct.getType().equals("closeBrace")) {
+            return;
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ';' , 'id', 'self', '(' , 'if', 'for', 'while' , 'ret' o '}'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
-     * ⟨Decl-Var-Locales⟩::= ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ semicolon
+     * <Decl-Var-Locales>::= <Tipo> <Lista-Declaracion-Variables> semicolon
      */
 
     public void declVarLocales() {
-
+        List<String> primerosDeclVarLocales = List.of("pstr","pbool","pint","ClassID","parray");
+        if(primerosDeclVarLocales.contains(tokenAct.getType())){
+            tipo();
+            listaDeclaracionVariables();
+            siguienteTerminal(tokenAct,List.of("semicolon"));
+    }
     }
 
     /**
-     * ⟨Lista-Declaracion-Variables⟩::= objectID ⟨Lista-Declaracion-VariablesF⟩
+     * <Lista-Declaracion-Variables>::= objectID <Lista-Declaracion-VariablesF>
      *
      */
 
     public void listaDeclaracionVariables() {
 
+        if(tokenAct.getType().equals("ObjectID")){
+                siguienteTerminal(tokenAct,List.of("ObjectID"));
+                listaDeclaracionVariablesF();
+        }else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'ObjectID'. Se encontro "
+                        + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+            }
     }
 
+
     /**
-     * ⟨Lista-Declaracion-VariablesF⟩::= comma ⟨Lista-Declaracion-Variables⟩ | λ
+     * <Lista-Declaracion-VariablesF>::= comma <Lista-Declaracion-Variables> | lambda
      */
 
     public void listaDeclaracionVariablesF() {
-
+        if (tokenAct.getType().equals("comma")) {
+            siguienteTerminal(tokenAct,List.of("comma"));
+            listaDeclaracionVariables();
+        } else if (tokenAct.getType().equals("semicolon")) {
+            return;
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ',' o ';'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
-     * ⟨Argumentos-Formales⟩::= openParen ⟨Argumentos-FormalesF⟩
+     * <Argumentos-Formales>::= openParen <Argumentos-FormalesF>
      */
 
     public void argumentosFormales() {
-
+        if (tokenAct.getType().equals("openParen")) {
+            siguienteTerminal(tokenAct,List.of("openParen"));
+            argumentosFormalesF();
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '('. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
-     * ⟨Argumentos-FormalesF⟩::= ⟨Lista-Argumentos-Formales⟩ closeParen | closeParen
+     * <Argumentos-FormalesF>::= <Lista-Argumentos-Formales> closeParen | closeParen
      */
 
     public void argumentosFormalesF() {
@@ -360,7 +396,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal⟩⟨Lista-Argumentos-FormalesF⟩
+     * <Lista-Argumentos-Formales> ::= <Argumento-Formal><Lista-Argumentos-FormalesF>
      */
 
     public void listaArgumentosFormales() {
@@ -368,15 +404,24 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Lista-Argumentos-FormalesF⟩ ::= comma ⟨Lista-Argumentos-Formales⟩ | λ
+     * <Lista-Argumentos-FormalesF> ::= comma <Lista-Argumentos-Formales> | lambda
      */
 
     public void listaArgumentosFormalesF() {
+        if (tokenAct.getType().equals("comma")) {
+            siguienteTerminal(tokenAct,List.of("comma"));
+            listaArgumentosFormales();
+        } else if (tokenAct.getType().equals("closeParen")) {
+            return;
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ',' o ')'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
 
     }
 
     /**
-     * ⟨Argumento-Formal⟩ ::= ⟨Tipo⟩ objectID
+     * <Argumento-Formal> ::= <Tipo> objectID
      */
 
     public void argumentoFormal() {
@@ -384,7 +429,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Tipo-Método⟩ ::=  ⟨Tipo⟩ | pvoid
+     * <Tipo-Metodo> ::=  <Tipo> | pvoid
      */
 
     public void tipoMetodo() {
@@ -392,38 +437,55 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩ | ⟨Tipo-Referencia⟩ | ⟨Tipo-Arreglo⟩
+     * <Tipo> ::= <Tipo-Primitivo> | <Tipo-Referencia> | <Tipo-Arreglo>
      */
 
     public  void tipo() {
 
     }
 
-    /** ⟨Tipo-Primitivo⟩ ::= Str | Int | Bool
-     *
+    /** <Tipo-Primitivo> ::= Str | Int | Bool
      */
     public void tipoPrimitivo() {
-
+        if (tokenAct.getType().equals("pstr") || tokenAct.getType().equals("pint") || tokenAct.getType().equals("pbool")) {
+            siguienteTerminal(tokenAct,List.of("pstr", "pint", "pbool"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'Str', 'Int' o 'Bool'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
-    /** ⟨Tipo-Referencia⟩ ::= idclass
+    /** <Tipo-Referencia> ::= idclass
      *
      */
 
     public void tipoReferencia() {
+        if (tokenAct.getType().equals("ClassID")) {
+            siguienteTerminal(tokenAct,List.of("ClassID"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'ClassID'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
 
     }
 
     /**
-     * ⟨Tipo-Arreglo⟩ ::= parray ⟨Tipo-Primitivo⟩
+     * <Tipo-Arreglo> ::= parray <Tipo-Primitivo>
      */
 
     public void tipoArreglo() {
+        if (tokenAct.getType().equals("parray")) {
+            siguienteTerminal(tokenAct,List.of("parray"));
+            tipoPrimitivo();
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'Array'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
 
     }
     /**
-     * ⟨Sentencia⟩ ::=  semicolon | ⟨Asignacion⟩ semicolon | ⟨Sentencia-Simple⟩ semicolon | pif openParen ⟨Expresion⟩ closeParen ⟨Sentencia⟩ <SentenciaFE> |
-     * pwhile openParen ⟨Expresion⟩ closeParen ⟨Sentencia⟩ | pfor openParen ⟨Tipo-Primitivo⟩ objectID pin objectID closeParen ⟨Sentencia⟩ | <Bloque> | pret <SentenciaFR>
+     * <Sentencia> ::=  semicolon | <Asignacion> semicolon | <Sentencia-Simple> semicolon | pif openParen <Expresion> closeParen <Sentencia> <SentenciaFE> |
+     * pwhile openParen <Expresion> closeParen <Sentencia> | pfor openParen <Tipo-Primitivo> objectID pin objectID closeParen <Sentencia> | <Bloque> | pret <SentenciaFR>
      */
 
     public void sentencia() {
@@ -431,15 +493,24 @@ public class SyntacticalAnalyzer {
     }
 
      /**
-     * <SentenciaFE> ::= pelse ⟨Sentencia⟩ | λ
-     */
-
+      * <SentenciaFE> ::= pelse <Sentencia> | lambda
+      */
+    // ARREGLAR TEMA DE IF ELSE
     public void sentenciaFE() {
+        if (tokenAct.getType().equals("pelse")) {
+            siguienteTerminal(tokenAct,List.of("pelse"));
+            sentencia();
+        } else if (tokenAct.getType().equals("closeBrace") || tokenAct.getType().equals("semicolon") || tokenAct.getType().equals("id") || tokenAct.getType().equals("pself") || tokenAct.getType().equals("openParen") || tokenAct.getType().equals("pif") || tokenAct.getType().equals("pwhile") || tokenAct.getType().equals("pfor") || tokenAct.getType().equals("pret") || tokenAct.getType().equals("openBrace")) {
+            return;
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'else', ';' , 'id', 'self', '(' , 'if', 'for', 'while' , 'ret' o '}'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
 
     }
 
     /**
-     * <SentenciaFR> ::=  ⟨Expresion⟩ semicolon | semicolon
+     * <SentenciaFR> ::=  <Expresion> semicolon | semicolon
      */
 
     public void sentenciaFR(){
@@ -447,15 +518,24 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Bloque⟩ ::=  openBrace <SentenciaE> closeBrace
+     * <Bloque> ::=  openBrace <SentenciaE> closeBrace
      */
 
     public void bloque() {
 
+        if (tokenAct.getType().equals("openBrace")) {
+            siguienteTerminal(tokenAct,List.of("openBrace"));
+            sentenciaE();
+            siguienteTerminal(tokenAct,List.of("closeBrace"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '{'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     * ⟨Asignacion⟩ ::= ⟨AccesoVar-Simple⟩ equalOperator ⟨Expresion⟩ | ⟨AccesoSelf-Simple⟩ equalOperator ⟨Expresion⟩
+     * <Asignacion> ::= <AccesoVar-Simple> equalOperator <Expresion> | <AccesoSelf-Simple> equalOperator <Expresion>
      */
 
     public void asignacion() {
@@ -463,15 +543,23 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨AccesoVar-Simple⟩ ::= id ⟨AccesoVar-SimpleF⟩
+     * <AccesoVar-Simple> ::= id <AccesoVar-SimpleF>
      */
 
     public void accesoVarSimple() {
 
+        if (tokenAct.getType().equals("id")) {
+            siguienteTerminal(tokenAct,List.of("id"));
+            accesoVarSimpleF();
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'id'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     * ⟨AccesoVar-SimpleF⟩ ::= ⟨Encadenado-SimpleE⟩  | openBracket ⟨Expresion⟩ closeBracket
+     * <AccesoVar-SimpleF> ::= <Encadenado-SimpleE>  | openBracket <Expresion> closeBracket
      */
 
     public void accesoVarSimpleF() {
@@ -479,7 +567,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Encadenado-SimpleE⟩ ::= ⟨Encadenado-Simple⟩ ⟨Encadenado-SimpleE⟩ | λ
+     * <Encadenado-SimpleE> ::= <Encadenado-Simple> <Encadenado-SimpleE> | lambda
      */
 
     public void encadenadoSimpleE() {
@@ -487,31 +575,56 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨AccesoSelf-Simple⟩ ::=  pself ⟨Encadenado-SimpleE⟩
+     * <AccesoSelf-Simple> ::=  pself <Encadenado-SimpleE>
      */
 
     public void accesoSelfSimple() {
 
+        if (tokenAct.getType().equals("pself")) {
+            siguienteTerminal(tokenAct,List.of("pself"));
+            encadenadoSimpleE();
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'self'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     * ⟨Encadenado-Simple⟩::= dot id
+     * <Encadenado-Simple> ::= dot id
      */
 
     public void encadenadoSimple() {
 
+        if (tokenAct.getType().equals("dot")) {
+            siguienteTerminal(tokenAct,List.of("dot"));
+            siguienteTerminal(tokenAct,List.of("id"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '.'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     * ⟨Sentencia-Simple⟩ ::= openParen ⟨Expresion⟩ closeParen
+     * <Sentencia-Simple> ::= openParen <Expresion> closeParen
      */
 
     public void sentenciaSimple() {
 
+        if (tokenAct.getType().equals("openParen")) {
+            siguienteTerminal(tokenAct,List.of("openParen"));
+            expresion();
+            siguienteTerminal(tokenAct,List.of("closeParen"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '('. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     *  ⟨Expresion⟩ ::= ⟨ExpOr ⟩
+     *  <Expresion> ::= <ExpOr >
      */
 
     public void expresion() {
@@ -519,14 +632,14 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpOr⟩  ::= ⟨ExpAnd⟩ ⟨EO⟩
+     * <ExpOr>  ::= <ExpAnd> <EO>
      */
 
     public void expOr() {
     }
 
     /**
-     * ⟨EO⟩  ::= orOperator ⟨ExpAnd⟩ ⟨EO⟩ | λ
+     * <EO>  ::= orOperator <ExpAnd> <EO> | lambda
      */
 
     public void EO() {
@@ -534,7 +647,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpAnd⟩  ::= ⟨ExpIgual⟩ ⟨EA⟩
+     * <ExpAnd>  ::= <ExpIgual> <EA>
      */
 
     public void expAnd() {
@@ -542,7 +655,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨EA⟩  ::= andOperator ⟨ExpIgual⟩ ⟨EA⟩ | λ
+     * <EA>  ::= andOperator <ExpIgual> <EA> | lambda
      */
 
     public void EA() {
@@ -550,7 +663,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpIgual⟩  ::= ⟨ExpCompuesta⟩ ⟨EI⟩
+     * <ExpIgual>  ::= <ExpCompuesta> <EI>
      */
 
     public void expIgual() {
@@ -558,7 +671,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨EI⟩  ::= OpIgual ⟨ExpCompuesta⟩ | λ
+     * <EI>  ::= OpIgual <ExpCompuesta> | lambda
      */
 
     public void EI() {
@@ -566,7 +679,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpCompuesta⟩ ::= ⟨ExpAd⟩ ⟨ExpCompuestaF⟩
+     * <ExpCompuesta> ::= <ExpAd> <ExpCompuestaF>
      */
 
     public void expCompuesta() {
@@ -574,7 +687,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpCompuestaF⟩ ::= ⟨OpCompuesto⟩ ⟨ExpAd⟩  | λ
+     * <ExpCompuestaF> ::= <OpCompuesto> <ExpAd>  | lambda
      */
 
     public void expCompuestaF() {
@@ -582,7 +695,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpAd⟩  ::= ⟨ExpMul⟩ ⟨EAD⟩
+     * <ExpAd>  ::= <ExpMul> <EAD>
      */
 
     public void expAd() {
@@ -590,7 +703,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨EAD⟩  ::= OpAd ⟨ExpMul⟩ ⟨EAD⟩ | λ
+     * <EAD>  ::= OpAd <ExpMul> <EAD> | lambda
      */
 
     public void EAD() {
@@ -598,7 +711,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpMul⟩  ::= ⟨ExpUn⟩ ⟨EM⟩
+     * <ExpMul>  ::= <ExpUn> <EM>
      */
 
     public void ExpMul() {
@@ -606,7 +719,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨EM⟩  ::= OpMul ⟨ExpUn⟩ ⟨EM⟩ | λ
+     * <EM>  ::= OpMul <ExpUn> <EM> | lambda
      */
 
     public void EM() {
@@ -614,7 +727,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩ | openParen ⟨ExpUnF⟩ | ⟨Literal⟩  | ⟨Primario⟩
+     * <ExpUn> ::= <OpUnario> <ExpUn> | openParen <ExpUnF> | <Literal>  | <Primario>
      */
 
     public void expUn() {
@@ -622,41 +735,71 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpUnF⟩::= Int closeParen ⟨ExpUn⟩| ⟨Expresion⟩ closeParen ⟨ExpresionParentizadaF⟩
+     * <ExpUnF> ::= Int closeParen <ExpUn> | <Expresion> closeParen <ExpresionParentizadaF>
      */
 
     public void ExpUnF() {
 
-    }
+
+
+     }
 
     /**
-     * ⟨OpIgual⟩ ::= equalOperator | notEqualOperator
+     * <OpIgual> ::= equalOperator | notEqualOperator
      */
 
     public void opIgual() {
 
+        if (tokenAct.getType().equals("equalOperator") || tokenAct.getType().equals("notEqualOperator")) {
+            siguienteTerminal(tokenAct,List.of("equalOperator", "notEqualOperator"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '==' o '!='. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     * ⟨OpCompuesto⟩ ::= greaterThanOperator | lessThanOperator | greaterThanOrEqualOperator | lessThanOrEqualOperator
+     * <OpCompuesto> ::= greaterThanOperator | lessThanOperator | greaterThanOrEqualOperator | lessThanOrEqualOperator
      */
 
     public void opCompuesto() {
+
+        if (tokenAct.getType().equals("greaterThanOperator") || tokenAct.getType().equals("lessThanOperator") || tokenAct.getType().equals("greaterThanOrEqualOperator") || tokenAct.getType().equals("lessThanOrEqualOperator")) {
+            siguienteTerminal(tokenAct,List.of("greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '>', '<', '>=' o '<='. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
-     * ⟨OpAd⟩ ::=  sumOperator | substractionOperator
+     * <OpAd> ::=  sumOperator | substractionOperator
      */
 
     public void opAd() {
 
+        if (tokenAct.getType().equals("sumOperator") || tokenAct.getType().equals("substractionOperator")) {
+            siguienteTerminal(tokenAct,List.of("sumOperator", "substractionOperator"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '+' o '-'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     * ⟨OpUnario⟩ ::=  sumOperator | substractionOperator | notOperator | incrementOperator | decrementOperator
+     * <OpUnario> ::=  sumOperator | substractionOperator | notOperator | incrementOperator | decrementOperator
      */
 
     public void opUnario() {
+
+        if (tokenAct.getType().equals("sumOperator") || tokenAct.getType().equals("substractionOperator") || tokenAct.getType().equals("notOperator") || tokenAct.getType().equals("incrementOperator") || tokenAct.getType().equals("decrementOperator")) {
+            siguienteTerminal(tokenAct,List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '+', '-', '!' , '++' o '--'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
 
     }
 
@@ -666,18 +809,32 @@ public class SyntacticalAnalyzer {
 
     public void opMul() {
 
+        if (tokenAct.getType().equals("multiplicationOperator") || tokenAct.getType().equals("divOperator")) {
+            siguienteTerminal(tokenAct,List.of("multiplicationOperator", "divOperator"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '*' o '/'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     * ⟨Literal⟩ := nil | ptrue | pfalse | const_int | const_str
+     * <Literal> := nil | ptrue | pfalse | IntegerLiteral| StringLiteral
       */
 
     public void literal() {
 
+        if (tokenAct.getType().equals("pnil") || tokenAct.getType().equals("ptrue") || tokenAct.getType().equals("pfalse") || tokenAct.getType().equals("StringLiteral") || tokenAct.getType().equals("IntegerLiteral")) {
+            siguienteTerminal(tokenAct,List.of("pnil", "ptrue", "pfalse", "StringLiteral", "IntegerLiteral"));
+        } else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'nil', 'true', 'false', 'StringLiteral' o 'IntegerLiteral'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+
     }
 
     /**
-     * ⟨Primario⟩:=  ⟨AccesoSelf ⟩ | id PrimarioF | ⟨Llamada-Método-Estático⟩ | ⟨Llamada-Conclassor ⟩
+     * <Primario>:=  <AccesoSelf > | id PrimarioF | <Llamada-Metodo-Estatico> | <Llamada-Conclassor >
      */
 
     public void primario() {
@@ -685,7 +842,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨PrimarioF⟩:= ⟨AccesoVarF2 ⟩ | ⟨Argumentos-Actuales⟩ ⟨Llamada-MétodoF⟩
+     * <PrimarioF>:= <AccesoVarF2 > | <Argumentos-Actuales> <Llamada-MetodoF>
      */
 
     public void primarioF() {
@@ -695,7 +852,7 @@ public class SyntacticalAnalyzer {
 
 
     /**
-     * ⟨ExpresionParentizadaF⟩::= ⟨Encadenado⟩  | λ
+     * <ExpresionParentizadaF>:= <Encadenado>  | lambda
      */
 
     public void expresionParentizadaF() {
@@ -703,169 +860,208 @@ public class SyntacticalAnalyzer {
     }
 
      /**
-     * ⟨AccesoSelf ⟩::= self ⟨AccesoSelfF ⟩
+      * <AccesoSelf >:= self <AccesoSelfF >
+       */
+
+     public void accesoSelf() {
+
+         if (tokenAct.getType().equals("pself")) {
+             siguienteTerminal(tokenAct,List.of("pself"));
+             accesoSelfF();
+         } else {
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'self'. Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
+
+     }
+
+     /**
+      * <AccesoSelfF >:= <Encadenado>  | lambda
       */
 
-    public void accesoSelf() {
+     public void accesoSelfF() {
 
-    }
+     }
 
-    /**
-     * ⟨AccesoSelfF ⟩::= ⟨Encadenado⟩  | λ
-     */
-
-    public void accesoSelfF() {
-
-    }
-
-    /**
-     * ⟨AccesoVarF2 ⟩::=  openBracket ⟨Expresión⟩ closeBracket ⟨AccesoVarF3 ⟩ | ⟨Encadenado⟩  | λ
-     */
-
-    public void accesoVarF2() {
-    }
-
-    /**
-     * ⟨AccesoVarF3 ⟩ ::= ⟨Encadenado⟩  | λ
-     */
-
-    public void accesoVarF3() {
-
-    }
-
-    /**
-     * ⟨Llamada-MétodoF⟩::= ⟨Encadenado⟩  | λ
-     */
-
-    public void llamadaMetodoF() {
-
-    }
-
-    /**
-     * ⟨Llamada-Método-Estático⟩::= idclass dot ⟨Llamada-Método⟩ ⟨Llamada-Método-EstáticoF⟩
-     */
-
-    public void llamadaMetodoEstatico() {
-
-    }
-
-    /**
-     * ⟨Llamada-Método-EstáticoF⟩::= ⟨Encadenado⟩ | λ
-     */
-
-    public void llamadaMetodoEstaticoF() {
-
-    }
-
-    /**
-     * ⟨Llamada-Conclassor ⟩::= new⟨Llamada-ConclassorF ⟩
-     */
-
-    public void llamadaConclassor() {
-
-    }
-
-    /**
-     * ⟨Llamada-ConclassorF ⟩::=  idclass ⟨Argumentos-Actuales⟩⟨Llamada-ConclassorF2 ⟩ | ⟨Tipo-Primitivo⟩ openBracket ⟨Expresion⟩ closeBracket
-     */
-
-    public void llamadaConclassorF() {
-    }
-
-    /**
-     * ⟨Llamada-ConclassorF2 ⟩::= ⟨Encadenado⟩  | λ
+     /**
+      * <AccesoVarF2 >::=  openBracket <Expresion> closeBracket <AccesoVarF3 > | <Encadenado>  | lambda
       */
 
-    public void llamadaConclassorF2() {
+     public void accesoVarF2() {
 
-    }
+     }
 
-    /**
-     * ⟨Argumentos-Actuales⟩ ::= openParen ⟨Argumentos-ActualesF⟩
-     */
-
-    public void argumentosActuales() {
-
-    }
-
-    /**
-     * ⟨Argumentos-ActualesF⟩ ::= ⟨Lista-Expresiones⟩  closeParen | closeParen
-     */
-
-    public void argumentosActualesF() {
-
-    }
-
-    /**
-     * ⟨Lista-Expresiones⟩::= ⟨Expresión⟩  ⟨Lista-ExpresionesF⟩
-     */
-
-    public void listaExpresiones() {
-
-    }
-
-    /**
-     * ⟨Lista-ExpresionesF⟩::= comma ⟨Lista-Expresiones⟩ | λ
-     */
-
-    public void listaExpresionesF() {
-
-    }
-
-    /**
-     * ⟨Encadenado⟩::= dot⟨EncadenadoF⟩
-     */
-
-    public void encadenado() {
-
-    }
-
-    /**
-     * ⟨EncadenadoF⟩::= id ⟨EncadenadoF2⟩
-     */
-
-    public void encadenadoF() {
-
-    }
-
-    /**
-     * ⟨EncadenadoF2⟩::= ⟨Argumentos-Actuales⟩⟨Llamada-Método-EncadenadoF⟩ | ⟨Acceso-Variable-EncadenadoF⟩
-     */
-
-    public void encadenadoF2() {
-
-    }
-
-    /**
-     * ⟨Llamada-Método-EncadenadoF⟩::= ⟨Encadenado⟩  | λ
-     */
-
-    public void llamadaMetodoEncadenadoF() {
-
-    }
-
-    /**
-     * ⟨Acceso-Variable-EncadenadoF⟩::= openBracket ⟨Expresion⟩ closeBracket ⟨Acceso-Variable-EncadenadoF2⟩ | ⟨Encadenado⟩  | λ
+     /**
+      * <AccesoVarF3 > ::= <Encadenado>  | lambda
       */
 
-    public void accesoVariableEncadenadoF() {
+     public void accesoVarF3() {
 
-    }
+     }
 
-    /**
-     * ⟨Acceso-Variable-EncadenadoF2⟩ ::= ⟨Encadenado⟩  | λ
-     */
-    public void accesoVariableEncadenadoF2(){
+     /**
+      * <Llamada-MetodoF>:= <Encadenado>  | lambda
+      */
 
-    }
+     public void llamadaMetodoF() {
+
+     }
+
+     /**
+      * <Llamada-Metodo-Estatico>:= idclass dot <Llamada-Metodo> <Llamada-Metodo-EstaticoF>
+      */
+
+     public void llamadaMetodoEstatico() {
+
+         if (tokenAct.getType().equals("ClassID")) {
+                 siguienteTerminal(tokenAct,List.of("ClassID"));
+                 siguienteTerminal(tokenAct,List.of("dot"));
+                 llamadaMetodoF();
+                 llamadaMetodoEstaticoF();
+             } else {
+                 throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'ClassID'. Se encontro "
+                         + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+             }
+
+     }
+
+     /**
+      * <Llamada-Metodo-EstaticoF>:= <Encadenado> | lambda
+      */
+
+     public void llamadaMetodoEstaticoF() {
+
+     }
+
+     /**
+      * <Llamada-Conclassor> ::= pnew< Llamada-ConclassorF >
+      */
+
+     public void llamadaConclassor() {
+
+         if (tokenAct.getType().equals("pnew")) {
+             siguienteTerminal(tokenAct,List.of("pnew"));
+             llamadaConclassorF();
+         } else {
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'new'. Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
+
+     }
+
+     /**
+      * <Llamada-ConclassorF >::=  idclass <Argumentos-Actuales> <Llamada-ConclassorF2 > | <Tipo-Primitivo> openBracket <Expresion> closeBracket
+      */
+
+     public void llamadaConclassorF() {
+     }
+
+     /**
+      * <Llamada-ConclassorF2 >::= <Encadenado>  | lambda
+      */
+
+     public void llamadaConclassorF2() {
+
+     }
+
+     /**
+      * <Argumentos-Actuales> ::= openParen <Argumentos-ActualesF>
+      */
+
+     public void argumentosActuales() {
+
+         if (tokenAct.getType().equals("openParen")) {
+             siguienteTerminal(tokenAct,List.of("openParen"));
+             argumentosActualesF();
+         } else {
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '('. Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
+
+     }
+
+     /**
+      * <Argumentos-ActualesF> ::= <Lista-Expresiones>  closeParen | closeParen
+      */
+
+     public void argumentosActualesF() {
+
+     }
+
+     /**
+      * <Lista-Expresiones>::= <Expresion>  <Lista-ExpresionesF>
+      */
+
+     public void listaExpresiones() {
+
+     }
+
+     /**
+      * <Lista-ExpresionesF> ::= comma <Lista-Expresiones> | lambda
+      */
+
+     public void listaExpresionesF() {
+
+     }
+
+     /**
+      * <Encadenado> ::= dot<EncadenadoF>
+      */
+
+     public void encadenado() {
+
+         if (tokenAct.getType().equals("dot")) {
+             siguienteTerminal(tokenAct,List.of("dot"));
+             encadenadoF();
+         } else {
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '.'. Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
+
+     }
+
+     /**
+      * <EncadenadoF> ::= id <EncadenadoF2>
+      */
+
+     public void encadenadoF() {
+
+     }
+
+     /**
+      * <EncadenadoF2> ::= <Argumentos-Actuales> <Llamada-Metodo-EncadenadoF> | <Acceso-Variable-EncadenadoF>
+      */
+
+     public void encadenadoF2() {
+
+     }
+
+     /**
+      * <Llamada-Metodo-EncadenadoF> ::= <Encadenado>  | lambda
+      */
+
+     public void llamadaMetodoEncadenadoF() {
+
+     }
+
+     /**
+      * <Acceso-Variable-EncadenadoF> ::= openBracket <Expresion> closeBracket <Acceso-Variable-EncadenadoF2> | <Encadenado>  | lambda
+      */
+
+     public void accesoVariableEncadenadoF() {
+
+     }
+
+     /**
+      * <Acceso-Variable-EncadenadoF2> ::= <Encadenado>  | lambda
+      */
+     public void accesoVariableEncadenadoF2(){
+
+     }
 
 
 
 
 
 
-
-
-
-
-}
+ }

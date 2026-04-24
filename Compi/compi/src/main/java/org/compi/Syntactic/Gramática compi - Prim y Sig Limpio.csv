@@ -1,0 +1,88 @@
+NO TERMINAL,CONJUNTO PRIMEROS ,,CONJUNTO SIGUIENTES
+program,pclass pimpl pstart,,éxito
+start,pstart,,exito
+Lista-Definiciones,pclass pimpl lambda,,pstart 
+Class,pclass ,,pclass pimpl pstart
+ClassF,openBrace colon,,pclass pimpl pstart
+AtributoE,ppub Str Bool Int  idclass parray lambda,,closeBrace
+Impl,pimpl,,pclass pimpl pstart
+MiembroE,pst pfn dot lambda,,closeBrace
+Herencia,colon,,openBrace
+Miembro,pst pfn dot,,pst pfn dot closeBrace
+Constructor,dot,,pst pfn dot closeBrace
+Atributo,ppub Str Bool Int  idclass parray,,ppub Str Bool Int  idclass parray  closeBrace
+Metodo,pst pfn,,pst pfn dot closeBrace
+MetodoF,Str Bool Int  idclass parray pvoid objectID,,pst pfn dot closeBrace
+Visibilidad,ppub,,Str Bool Int  idclass parray
+FormaMetodo,pst,,pfn
+BloqueMetodo,openBrace,,pst pfn dot closeBrace éxito 
+DeclVarLocalesE,Str Bool Int  idclass parray lambda,,closeBrace  semicolon id pself openParen pif pwhile pfor openBrace pret 
+SentenciaE,semicolon id pself openParen pif pwhile pfor openBrace pret  lambda,,closeBrace
+DeclVarLocales,Str Bool Int  idclass parray,,Str Bool Int idclass parray pst pfn dot closeBrace éxito
+ListaDeclaracionVariables,objectID,,semicolon
+ListaDeclaracionVariablesF,comma lambda,,semicolon
+ArgumentosFormales,openParen,,openBrace
+ArgumentosFormalesF,Str Bool Int  idclass parray closeParen,,openBrace
+ListaArgumentosFormales,Str Bool Int  idclass parray,,closeParen
+ListaArgumentosFormalesF,comma lambda,,closeParen
+ArgumentoFormal,Str Bool Int  idclass parray,,comma closeParen
+TipoMetodo,Str Bool Int  idclass parray pvoid,,objectID 
+Tipo,Str Bool Int  idclass parray,,objectID 
+TipoPrimitivo,Str Bool Int ,,objectID openBracket 
+TipoReferencia,idclass,,objectID
+TipoArreglo,parray,,objectID
+Sentencia,semicolon id pself openParen pif pwhile pfor openBrace pret ,,semicolon id pself openParen pilf pwhile pfor openBrace pret pelse closeBrace 
+SentenciaFE,pelse lambda,,semicolon id pself openParen pilf pwhile pfor openBrace pret pelse closeBrace 
+SentenciaFR, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new semicolon,,semicolon id pself openParen pilf pwhile pfor openBrace pret pelse closeBrace 
+Bloque,openBrace,,semicolon id pself openParen pilf pwhile pfor openBrace pret pelse closeBrace 
+Asignacion,id pself,,semicolon
+AccesoVarSimple,id,,equalOperator
+AccesoVarSimpleF,dot lambda openBracket,,equalOperator
+EncadenadoSimpleE,dot lambda,,equalOperator 
+AccesoSelfSimple,pself,,equalOperator
+EncadenadoSimple,dot,,dot equalOperator
+SentenciaSimple,openParen,,semicolon
+Expresion, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new,,semicolon closeParen closeBracket comma
+ExpOr, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new,,semicolon closeParen closeBracket  comma
+EO,orOperator lambda,,semicolon closeParen closeBracket comma
+ExpAnd, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new,,orOperator closeParen closeBracket semicolon comma
+EA, andOperator lambda,,orOperator closeParen closeBracket semicolon comma
+ExpIgual, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new,,andOperator semicolon closeParen orOperator closeBracket semicolon comma
+EI,lambda equalOperator notEqualOperator,,andOperator semicolon closeParen orOperator closeBracket semicolon comma
+ExpCompuesta, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new,,equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon comma
+ExpCompuestaF,greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator lambda,,equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon comma
+ExpAd, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new,,equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator comma
+EAD,sumOperator substractionOperator lambda,,equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator comma
+ExpMul,sumOperator substractionOperator notOperator incrementOperator decrementOperator openParen nil ptrue pfalse const_int const_str self  id idclass new,,sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator comma
+EM,multiplicationOperator divOperator lambda,,sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator comma
+ExpUn,sumOperator substractionOperator notOperator incrementOperator decrementOperator openParen nil ptrue pfalse const_int const_str self  id idclass new,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator comma
+OpIgual,equalOperator notEqualOperator,, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new 
+OpCompuesto,greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator,, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new
+OpAd,sumOperator substractionOperator,,sumOperator substractionOperator notOperator incrementOperator decrementOperator openParen nil ptrue pfalse const_int const_str self  id idclass new
+OpUnario,sumOperator substractionOperator notOperator incrementOperator decrementOperator,,sumOperator substractionOperator notOperator incrementOperator decrementOperator openParen nil ptrue pfalse const_int const_str self  id idclass new
+OpMul,multiplicationOperator divOperator,,sumOperator substractionOperator notOperator incrementOperator decrementOperator openParen nil ptrue pfalse const_int const_str self  id idclass new
+Literal,nil ptrue pfalse const_int const_str,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+Primario,self  id idclass new,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+ExpresionParentizadaF,dot lambda,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+AccesoSelf,self ,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+AccesoSelfF,dot lambda ,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+AccesoVarF2,lambda openBracket dot,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+AccesoVarF3,dot lambda,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+LlamadaMetodoF,dot lambda,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+LlamadaMetodoEstatico,idclass ,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+LlamadaMetodoEstaticoF,dot lambda,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+LlamadaConclassor,new,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+LlamadaConclassorF,idclass Str Bool Int ,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+LlamadaConclasorF2,dot lambda,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+ArgumentosActuales,openParen,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+ArgumentosActualesF, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new closeParen,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+ListaExpresiones, sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new,,closeParen
+ListaExpresionesF,comma lambda,,closeParen
+LlamadaMetodoEncadenadoF,dot lambda,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+AccesoVariableEncadenadoF,dot  lambda openBracket,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+Encadenado,dot ,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+EncadenadoF,id ,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+PrimarioF,openBracket dot openParen lambda,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+ExpUnF,Int sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator comma
+EncadenadoF2,openParen dot openBracket lambda,,multiplicationOperator divOperator sumOperator substractionOperator equalOperator notEqualOperator andOperator semicolon closeParen orOperator closeBracket semicolon greaterThanOperator lessThanOperator greaterThanOrEqualOperator lessThanOrEqualOperator
+Acceso-Variable-EncadenadoF2,dot lambda,,
