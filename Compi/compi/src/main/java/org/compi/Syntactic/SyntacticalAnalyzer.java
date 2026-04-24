@@ -21,8 +21,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-    * Metodo que se encarga de ver el no terminal que se esta analizando y comparar el token recibido con el token esperado
-     * (que puede ser una lista, ya que puede tener varios SIGUIENTES)
+    * Metodo que se encarga de ver el no terminal que se esta analizando y comparar el token recibido con los tokens esperados
      */
     public void siguienteTerminal (token received , List<String> expected) throws SyntacticExceptions {
 
@@ -46,6 +45,10 @@ public class SyntacticalAnalyzer {
 
     public void program() {
         tokenAct = lexicalAnalyzer.nextToken();
+        List<String> primerosListaDefiniciones = List.of("pclass", "pimpl", "pstart");
+        if (!primerosListaDefiniciones.contains(tokenAct.getType())) {
+            throw new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'class', 'impl' o 'start'. Se encontro " + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine() + ", columna " + tokenAct.getColumn());
+        }
         listaDefiniciones();
         start();
         // debemos haber llegado al final del archivo
@@ -91,7 +94,7 @@ public class SyntacticalAnalyzer {
 
     public void Class() {
         siguienteTerminal(tokenAct,List.of("pclass"));
-        siguienteTerminal(tokenAct,List.of("classID");
+        siguienteTerminal(tokenAct,List.of("classID"));
         classF();
     }
 
@@ -112,7 +115,7 @@ public class SyntacticalAnalyzer {
             siguienteTerminal(tokenAct,List.of("closeBrace"));
 
         }else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ':' o '{'. Se encontro " + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine + ", columna " + tokenAct.getColumn());
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ':' o '{'. Se encontro " + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine() + ", columna " + tokenAct.getColumn());
         }
     }
 
@@ -131,7 +134,7 @@ public class SyntacticalAnalyzer {
             
         }else{
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'pub', 'Str', 'Bool', 'Int' , 'ClassID', 'Array' o '}'. Se encontro "
-                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine() + ", columna " + tokenAct.getColumn());
         }
     }
 
@@ -156,11 +159,11 @@ public class SyntacticalAnalyzer {
         if(primeros.contains(tokenAct.getType())){
             miembro();
             miembroE();
-        }else-if(tokenAct.getType().equals("closeBrace")){
+        }else if(tokenAct.getType().equals("closeBrace")){
             return;
         }else{
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'st', 'fn', '.' o '}'. Se encontro "
-                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
     }
 
@@ -184,7 +187,7 @@ public class SyntacticalAnalyzer {
             constructor();
         }else {
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'st', 'fn', '.' o '}'. Se encontro "
-                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine()+ ", columna " + tokenAct.getColumn());
         }
     }
 
@@ -193,7 +196,7 @@ public class SyntacticalAnalyzer {
      */
 
     public void constructor() {
-        siguienteTerminal(tokenAct,List.of("dot");
+        siguienteTerminal(tokenAct,List.of("dot"));
         argumentosFormales();
         bloqueMetodo();
     }
@@ -209,13 +212,13 @@ public class SyntacticalAnalyzer {
             tipo();
             listaDeclaracionVariables();
             siguienteTerminal(tokenAct,List.of("semicolon"));
-        } else-if(primerosTipo.contains(tokenAct.getType())){
+        } else if(primerosTipo.contains(tokenAct.getType())){
             tipo();
             listaDeclaracionVariables();
             siguienteTerminal(tokenAct,List.of("semicolon"));
         } else{
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'pub', 'Str', 'Bool', 'Int', 'ClassID' o 'Array'. Se encontro "
-                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
     }
 
@@ -229,12 +232,13 @@ public class SyntacticalAnalyzer {
            formaMetodo();
            siguienteTerminal(tokenAct,List.of("pfn"));
            metodoF();
-        }else-if(tokenAct.getType().equals("pfn")){
+        }else if(tokenAct.getType().equals("pfn")){
            siguienteTerminal(tokenAct,List.of("pfn"));
-           metodoF();}
+           metodoF();
+       }
         else{
                 throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'Str', 'Bool', 'Int', 'ClassID' ,'void', 'fn' o 'Array'. Se encontro "
-                        + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+                        + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine()+ ", columna " + tokenAct.getColumn());
         }
     }
 
@@ -249,7 +253,7 @@ public class SyntacticalAnalyzer {
             siguienteTerminal(tokenAct,List.of("ObjectID"));
             argumentosFormales();
             bloqueMetodo();
-        }else-if(tokenAct.getType.equals("ObjectID")) {
+        }else if(tokenAct.getType().equals("ObjectID")) {
                 siguienteTerminal(tokenAct, List.of("ObjectID"));
                 argumentosFormales();
                 bloqueMetodo();
@@ -289,19 +293,20 @@ public class SyntacticalAnalyzer {
      * <Decl-Var-LocalesE> ::=  <Decl-Var-Locales> <Decl-Var-LocalesE> | λ
      */
 
+    // _____ ARREGLAR ______ COSO DE ID
     public void declVarLocalesE() {
         List<String> primerosDeclVarLocales = List.of("Str","Bool","Int","ClassID","parray");
         List<String> siguientes = List.of("closeBrace", "semicolon", "id" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
         if(primerosDeclVarLocales.contains(tokenAct.getType())){
-            declvarLocales();
+            declVarLocales();
             declVarLocalesE();
-        }else-if(siguientes.contains(tokenAct.getType())){
+        }else if(siguientes.contains(tokenAct.getType())){
             return;
         }else{
                 throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'Str', 'Bool', 'Int', 'ClassID', 'Array' " +
                         "'{', '}', ';' , 'id', 'self', '(' , 'if', 'for', 'while' o  'ret' ." +
                         " Se encontro "
-                        + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+                        + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
     }
 
