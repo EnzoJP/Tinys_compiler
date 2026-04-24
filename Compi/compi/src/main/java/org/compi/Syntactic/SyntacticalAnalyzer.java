@@ -90,7 +90,9 @@ public class SyntacticalAnalyzer {
      */
 
     public void Class() {
-
+        siguienteTerminal(tokenAct,List.of("pclass"));
+        siguienteTerminal(tokenAct,List.of("classID");
+        classF();
     }
 
     /**
@@ -98,7 +100,20 @@ public class SyntacticalAnalyzer {
      */
 
     public void classF() {
+        //caso herencia
+        if (tokenAct.getType().equals("colon")){
+            herencia();
+            siguienteTerminal(tokenAct,List.of("openBrace"));
+            atributoE();
+            siguienteTerminal(tokenAct,List.of("closeBrace"));
+        } else if (tokenAct.getType().equals("openBrace")) {
+            //caso {
+            atributoE();
+            siguienteTerminal(tokenAct,List.of("closeBrace"));
 
+        }else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ':' o '{'. Se encontro " + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine + ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -106,15 +121,30 @@ public class SyntacticalAnalyzer {
      */
 
     public void atributoE() {
-
+        List<String> primeros = List.of("ppub", "Str", "Bool", "Int", "ClassID", "parray");
+        if(primeros.contains(tokenAct.getType())){
+            atributo();
+            atributoE();
+        } else if (tokenAct.getType().equals("closeBrace")) {
+            //caso lambda
+            return;
+            
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'pub', 'Str', 'Bool', 'Int' , 'ClassID', 'Array' o '}'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
-     * ⟨Impl⟩ ::= pimpl classID openBrace ⟨MiembroE⟩ closeBrace
+     * ⟨Impl⟩ ::= pimpl ClassID openBrace ⟨MiembroE⟩ closeBrace
      */
 
     public void impl() {
-
+        siguienteTerminal(tokenAct,List.of("pimpl"));
+        siguienteTerminal(tokenAct,List.of("ClassID"));
+        siguienteTerminal(tokenAct,List.of("openBrace"));
+        miembroE();
+        siguienteTerminal(tokenAct,List.of("closeBrace"));
     }
 
     /**
@@ -122,7 +152,16 @@ public class SyntacticalAnalyzer {
      */
 
     public void miembroE() {
-
+        List<String> primeros = List.of("pst","pfn","dot");
+        if(primeros.contains(tokenAct.getType())){
+            miembro();
+            miembroE();
+        }else-if(tokenAct.getType().equals("closeBrace")){
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'st', 'fn', '.' o '}'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -130,7 +169,8 @@ public class SyntacticalAnalyzer {
      */
 
     public void herencia() {
-
+        siguienteTerminal(tokenAct,List.of("colon"));
+        tipo();
     }
 
     /**
@@ -138,7 +178,14 @@ public class SyntacticalAnalyzer {
      */
 
     public void miembro() {
-
+        if(tokenAct.getType().equals("pst") || tokenAct.getType().equals("pfn")){
+            metodo();
+        } else if (tokenAct.getType().equals("dot")) {
+            constructor();
+        }else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'st', 'fn', '.' o '}'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -146,7 +193,9 @@ public class SyntacticalAnalyzer {
      */
 
     public void constructor() {
-
+        siguienteTerminal(tokenAct,List.of("dot");
+        argumentosFormales();
+        bloqueMetodo();
     }
 
     /** ⟨Atributo⟩ ::= ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ semicolon  | ⟨Tipo⟩ ⟨Lista-Declaración-Variables⟩ semicolon
@@ -154,7 +203,20 @@ public class SyntacticalAnalyzer {
      */
 
     public void atributo() {
-
+        List<String> primerosTipo=List.of("Str", "Bool", "Int", "ClassID", "parray");
+        if(tokenAct.getType().equals("ppub")){
+            visibilidad();
+            tipo();
+            listaDeclaracionVariables();
+            siguienteTerminal(tokenAct,List.of("semicolon"));
+        } else-if(primerosTipo.contains(tokenAct.getType())){
+            tipo();
+            listaDeclaracionVariables();
+            siguienteTerminal(tokenAct,List.of("semicolon"));
+        } else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'pub', 'Str', 'Bool', 'Int', 'ClassID' o 'Array'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -162,7 +224,18 @@ public class SyntacticalAnalyzer {
      */
 
     public void metodo() {
-
+        List<String> primerosFormaMetodo= List.of("Str","Bool" ,"Int","ClassID" ,"parray", "pvoid");
+       if (primerosFormaMetodo.contains(tokenAct.getType())) {
+           formaMetodo();
+           siguienteTerminal(tokenAct,List.of("pfn"));
+           metodoF();
+        }else-if(tokenAct.getType().equals("pfn")){
+           siguienteTerminal(tokenAct,List.of("pfn"));
+           metodoF();}
+        else{
+                throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'Str', 'Bool', 'Int', 'ClassID' ,'void', 'fn' o 'Array'. Se encontro "
+                        + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -170,6 +243,17 @@ public class SyntacticalAnalyzer {
      */
 
     public void metodoF() {
+        List<String> primerosTipoMetodo =List.of("Str","Bool" ,"Int","ClassID" ,"parray", "pvoid");
+        if(primerosTipoMetodo.contains(tokenAct.getType())){
+            tipoMetodo();
+            siguienteTerminal(tokenAct,List.of("ObjectID"));
+            argumentosFormales();
+            bloqueMetodo();
+        }else-if(tokenAct.getType.equals("ObjectID")) {
+                siguienteTerminal(tokenAct, List.of("ObjectID"));
+                argumentosFormales();
+                bloqueMetodo();
+            }
 
     }
 
@@ -179,7 +263,7 @@ public class SyntacticalAnalyzer {
      */
 
     public void visibilidad() {
-
+        siguienteTerminal(tokenAct,List.of("ppub"));
     }
 
     /**
@@ -187,7 +271,7 @@ public class SyntacticalAnalyzer {
      */
 
     public void formaMetodo() {
-
+            siguienteTerminal(tokenAct,List.of("pst"));
     }
 
     /**
@@ -195,7 +279,10 @@ public class SyntacticalAnalyzer {
      */
 
     public void bloqueMetodo() {
-
+            siguienteTerminal(tokenAct,List.of("openBrace"));
+            declVarLocalesE();
+            sentenciaE();
+            siguienteTerminal(tokenAct,List.of("closeBrace"));
     }
 
     /**
@@ -203,7 +290,19 @@ public class SyntacticalAnalyzer {
      */
 
     public void declVarLocalesE() {
-
+        List<String> primerosDeclVarLocales = List.of("Str","Bool","Int","ClassID","parray");
+        List<String> siguientes = List.of("closeBrace", "semicolon", "id" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
+        if(primerosDeclVarLocales.contains(tokenAct.getType())){
+            declvarLocales();
+            declVarLocalesE();
+        }else-if(siguientes.contains(tokenAct.getType())){
+            return;
+        }else{
+                throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'Str', 'Bool', 'Int', 'ClassID', 'Array' " +
+                        "'{', '}', ';' , 'id', 'self', '(' , 'if', 'for', 'while' o  'ret' ." +
+                        " Se encontro "
+                        + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -510,7 +609,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩ | openParen ⟨ExpUnF⟩ | ⟨Literal⟩  | ⟨Primario⟩ ⟨OperandoF⟩
+     * ⟨ExpUn⟩ ::= ⟨OpUnario⟩ ⟨ExpUn⟩ | openParen ⟨ExpUnF⟩ | ⟨Literal⟩  | ⟨Primario⟩
      */
 
     public void expUn() {
@@ -518,7 +617,7 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨ExpUnF⟩::= Int closeParen |  ⟨OperandoF⟩ | ⟨Expresion⟩ closeParen ⟨ExpresionParentizadaF⟩
+     * ⟨ExpUnF⟩::= Int closeParen ⟨ExpUn⟩| ⟨Expresion⟩ closeParen ⟨ExpresionParentizadaF⟩
      */
 
     public void ExpUnF() {
@@ -561,14 +660,6 @@ public class SyntacticalAnalyzer {
       */
 
     public void opMul() {
-
-    }
-
-    /**
-     * ⟨OperandoF⟩: := ⟨Encadenado⟩  | λ
-     */
-
-    public void operandoF() {
 
     }
 
@@ -749,13 +840,19 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * ⟨Acceso-Variable-EncadenadoF⟩::= openBracket ⟨Expresion⟩ closeBracket ⟨Encadenado⟩  | ⟨Encadenado⟩  | λ
+     * ⟨Acceso-Variable-EncadenadoF⟩::= openBracket ⟨Expresion⟩ closeBracket ⟨Acceso-Variable-EncadenadoF2⟩ | ⟨Encadenado⟩  | λ
       */
 
     public void accesoVariableEncadenadoF() {
 
     }
 
+    /**
+     * ⟨Acceso-Variable-EncadenadoF2⟩ ::= ⟨Encadenado⟩  | λ
+     */
+    public void accesoVariableEncadenadoF2(){
+
+    }
 
 
 
