@@ -707,7 +707,15 @@ public class SyntacticalAnalyzer {
      */
 
     public void encadenadoSimpleE() {
-
+        if(tokenAct.getType().equals("dot")){
+            encadenadoSimple();
+            encadenadoSimpleE();
+        } else if (tokenAct.getType().equals(equalOperator)) {
+            return;
+        }else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '.' . Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
 
 
     }
@@ -796,7 +804,17 @@ public class SyntacticalAnalyzer {
      */
 
     public void EO() {
-
+        List<String> siguientes = List.of("semicolon", "closeParen", "closeBracket" ,"comma");
+        if(tokenAct.getType().equals("orOperator")){
+            siguienteTerminal(tokenAct,List.of("orOperator");
+            expAnd();
+            EO();
+        } else if (siguientes.contains(tokenAct.getType())) {
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '||', ';' , ')', '}' o ','. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -821,7 +839,15 @@ public class SyntacticalAnalyzer {
      */
 
     public void EA() {
-
+        List<String> siguientes = List.of("orOperator","closeParen","closeBracket","semicolon","comma");
+        if(tokenAct.getType().equals("andOperator")){
+            siguienteTerminal(tokenAct,List.of("andOperator"));
+        } else if (siguientes.contains(tokenAct.getType())) {
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '||', ';' , ')', '}' o ','. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -842,11 +868,21 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <EI>  ::= OpIgual <ExpCompuesta> | lambda
+     * <EI>  ::= <OpIgual>  <ExpCompuesta> | lambda
      */
 
     public void EI() {
-
+        List<String> primerosOpIgual =List.of("equalOperator","notEqualOperator");
+        List<String> siguientes = List.of("andOperator", "semicolon", "closeParen", "orOperator", "closeBracket", "comma");
+        if(primerosOpIgual.contains(tokenAct.getType())){
+            opIgual();
+            expCompuesta();
+        } else if (siguientes.contains(tokenAct.getType())) {
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '=', '!=', '||', '&&', ';', '}', ')' o ','. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -871,6 +907,17 @@ public class SyntacticalAnalyzer {
      */
 
     public void expCompuestaF() {
+        List<String> primerosOpCompuesto = List.of("greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+        List<String> siguientes = List.of("equalOperator", "notEqualOperator", "andOperator", "semicolon", "closeParen", "orOperator", "closeBracket" , "comma");
+        if(primerosOpCompuesto.contains(tokenAct.getType())){
+             opCompuesto();
+             expAd();
+        } else if (siguientes.contains(tokenAct.getType())) {
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}' o ','. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
 
     }
 
@@ -917,11 +964,22 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <EM>  ::= OpMul <ExpUn> <EM> | lambda
+     * <EM>  ::= <OpMul> <ExpUn> <EM> | lambda
      */
 
     public void EM() {
-
+        List<String> siguientes = List.of("sumOperator", "substractionOperator", "equalOperator", "notEqualOperator", "andOperator",  "closeParen",
+                "orOperator", "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator", "comma");
+        if(tokenAct.getType().equals("multiplicationOperator")||tokenAct.getType().equals("divOperator")){
+            opMul();
+            expUn();
+            EM();
+        } else if (siguientes.contains(tokenAct.getType())) {
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' o ','. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
     /**
@@ -955,10 +1013,18 @@ public class SyntacticalAnalyzer {
      */
 
     public void ExpUnF() {
-
-
-
-     }
+        List<String> primerosExpresion = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "nil", "ptrue", "pfalse", "const_int", "const_str",
+                "openParen", "self",  "id", "ClassID", "new");
+        if(tokenAct.getType().equals("Int")){
+            siguienteTerminal(tokenAct,List.of("Int");
+            siguienteTerminal(tokenAct,List.of("closeParen"));
+            expUn();
+        } else if (primerosExpresion.contains(tokenAct.getType())) {
+            expresion();
+            siguienteTerminal(tokenAct,List.of("closeParen"));
+            expresionParentizadaF();
+        }
+    }
 
     /**
      * <OpIgual> ::= equalOperator | notEqualOperator
@@ -1076,7 +1142,15 @@ public class SyntacticalAnalyzer {
      */
 
     public void primarioF() {
-
+        if(tokenAct.getType().equals("openBracket")||tokenAct.getType().equals("dot")){
+            accesoVarF2();
+        } else if (tokenAct.getType().equals("openParen")) {
+            argumentosActuales();
+            llamadaMetodoF();
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '{', '.' o '('. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
 
@@ -1086,7 +1160,18 @@ public class SyntacticalAnalyzer {
      */
 
     public void expresionParentizadaF() {
-
+        List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+        if(tokenAct.getType().equals("dot")){
+            encadenado();
+        }else-if(siguientes.contains(tokenAct.getType())){
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                    " '+' , '.' o  '-' . Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
     }
 
      /**
@@ -1110,7 +1195,18 @@ public class SyntacticalAnalyzer {
       */
 
      public void accesoSelfF() {
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+        if(tokenAct.getType().equals("dot")){
+            encadenado();
+        } else if (siguientes.contains(tokenAct.getType())) {
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                    " '+' , '.' o  '-' . Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
      }
 
      /**
@@ -1118,7 +1214,23 @@ public class SyntacticalAnalyzer {
       */
 
      public void accesoVarF2() {
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+         if(tokenAct.getType().equals("openBracket")){
+            siguienteTerminal(tokenAct,List.of("openBracket");
+            expresion();
+            siguienteTerminal(tokenAct,List.of("closeBracket");
+            accesoVarF3();
+         } else if (tokenAct.getType().equals("dot")) {
+             encadenado();
+         } else if (siguientes.contains(tokenAct.getType())) {
+             return;
+         }else{
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                     " '+' , '.' o  '-' . Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
      }
 
      /**
@@ -1126,7 +1238,18 @@ public class SyntacticalAnalyzer {
       */
 
      public void accesoVarF3() {
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+        if(tokenAct.getType().equals("dot")){
+            encadenado();
+        } else if (siguientes.contains(tokenAct.getType())) {
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                    " '+' , '.' o  '-' . Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
      }
 
      /**
@@ -1134,7 +1257,18 @@ public class SyntacticalAnalyzer {
       */
 
      public void llamadaMetodoF() {
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+         if(tokenAct.getType().equals("dot")){
+             encadenado();
+         } else if (siguientes.contains(tokenAct.getType())) {
+             return;
+         }else{
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                     " '+' , '.' o  '-' . Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
      }
 
      /**
@@ -1160,7 +1294,18 @@ public class SyntacticalAnalyzer {
       */
 
      public void llamadaMetodoEstaticoF() {
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+         if(tokenAct.getType().equals("dot")){
+             encadenado();
+         } else if (siguientes.contains(tokenAct.getType())) {
+             return;
+         }else{
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                     " '+' , '.' o  '-' . Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
      }
 
      /**
@@ -1184,6 +1329,21 @@ public class SyntacticalAnalyzer {
       */
 
      public void llamadaConclassorF() {
+         List<String> primerosTipoPrimitivo= List.of("Str","Int","Bool");
+         if(tokenAct.getType().equals("ClassID")){
+             siguienteTerminal(tokenAct,List.of("ClassID"));
+             argumentosActuales();
+             llamadaConclassorF2();
+         } else if (primerosTipoPrimitivo.contains(tokenAct.getType())) {
+            tipoPrimitivo();
+            siguienteTerminal(tokenAct,List.of("openBracket"));
+            expresion();
+             siguienteTerminal(tokenAct,List.of("closeBracket"));
+         }else{
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'ClassID', 'Str', 'Int' o 'Bool'. Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
+
      }
 
      /**
@@ -1191,7 +1351,18 @@ public class SyntacticalAnalyzer {
       */
 
      public void llamadaConclassorF2() {
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+         if(tokenAct.getType().equals("dot")){
+             encadenado();
+         } else if (siguientes.contains(tokenAct.getType())) {
+             return;
+         }else{
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                     " '+' , '.' o  '-' . Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
      }
 
      /**
@@ -1215,7 +1386,18 @@ public class SyntacticalAnalyzer {
       */
 
      public void argumentosActualesF() {
-
+        List<String> primerosListaExpresiones =List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator",
+                "nil", "ptrue", "pfalse", "const_int", "const_str", "openParen", "pself", "id" ,"ClassID" ,"pnew");
+        if(primerosListaExpresiones.contains(tokenAct.getType())){
+            listaExpresiones();
+            siguienteTerminal(tokenAct,List.of("closeParen"));
+        } else if (tokenAct.getType().equals("closeParen")) {
+            siguienteTerminal(tokenAct,List.of("closeParen");
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '+', '-', '!', '++', '--', 'nil', 'true', 'false', 'const_str'," +
+                    " 'const_str', '(', 'self', 'nil',  '+' , 'id', 'ClassID', 'new' o  '-' . Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
      }
 
      /**
@@ -1223,7 +1405,13 @@ public class SyntacticalAnalyzer {
       */
 
      public void listaExpresiones() {
-
+         List<String> primerosExpresion = List.of("sumOperator", "substractionOperator", "notOperator",
+                 "incrementOperator", "decrementOperator", "nil", "ptrue", "pfalse", "const_int", "const_str",
+                 "openParen", "self",  "id", "ClassID", "new");
+         if(primerosExpresion.contains(tokenAct.getType())){
+             expresion();
+             listaExpresionesF();
+         }
      }
 
      /**
@@ -1232,6 +1420,14 @@ public class SyntacticalAnalyzer {
 
      public void listaExpresionesF() {
 
+        if(tokenAct.getType().equals("comma")){
+            siguienteTerminal(tokenAct,List.of("comma"));
+        } else if (tokenAct.getType().equals("closeParen")) {
+            return;
+        }else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ',' o ')'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
      }
 
      /**
@@ -1271,7 +1467,15 @@ public class SyntacticalAnalyzer {
       */
 
      public void encadenadoF2() {
-
+        if(tokenAct.getType().equals("openParen")){
+            argumentosActuales();
+            llamadaMetodoEncadenadoF();
+        } else if (tokenAct.getType().equals("openBracket")|| tokenAct.getType().equals("dot")) {
+            accesoVariableEncadenadoF();
+        }else {
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '(' , '{' o '.'. Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
      }
 
      /**
@@ -1279,7 +1483,18 @@ public class SyntacticalAnalyzer {
       */
 
      public void llamadaMetodoEncadenadoF() {
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+         if(tokenAct.getType().equals("dot")){
+             encadenado();
+         } else if (siguientes.contains(tokenAct.getType())) {
+             return;
+         }else{
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                     " '+' , '.' o  '-' . Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
      }
 
      /**
@@ -1287,14 +1502,39 @@ public class SyntacticalAnalyzer {
       */
 
      public void accesoVariableEncadenadoF() {
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+        if(tokenAct.getType().equals("openBracket")){
+            siguienteTerminal(tokenAct,List.of("openBracket");
+            expresion();
+            siguienteTerminal(tokenAct,List.of("closeBracket");
+            accesoVariableEncadenadoF2();
+        } else if (tokenAct.getType().equals("dot")) {
+            encadenado();
+        } else{
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                    " '+' , '{', '.' o  '-' . Se encontro "
+                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
      }
 
      /**
       * <Acceso-Variable-EncadenadoF2> ::= <Encadenado>  | lambda
       */
      public void accesoVariableEncadenadoF2(){
-
+         List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
+                 ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
+                 "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
+         if(tokenAct.getType().equals("dot")){
+             encadenado();
+         } else if (siguientes.contains(tokenAct.getType())) {
+             return;
+         }else{
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '>', '<', '>=', '<=', '=', '!=', '&&', ';', ')', '||', '}', '*', '/' " +
+                     " '+' , '.' o  '-' . Se encontro "
+                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+         }
      }
 
 
