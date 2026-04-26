@@ -133,7 +133,7 @@ public class SyntacticalAnalyzer {
         } else if (tokenAct.getType().equals("closeBrace")) {
             //caso lambda
             return;
-            
+
         }else{
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'pub', 'Str', 'Bool', 'Int' , 'ClassID', 'Array' o '}'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine() + ", columna " + tokenAct.getColumn());
@@ -298,7 +298,7 @@ public class SyntacticalAnalyzer {
     // _____ ARREGLAR ______ COSO DE ID
     public void declVarLocalesE() {
         List<String> primerosDeclVarLocales = List.of("pstr","pbool","pint","ClassID","parray");
-        List<String> siguientes = List.of("closeBrace", "semicolon", "ObjectID" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
+        List<String> siguientes = List.of("closeBrace", "semicolon", "id" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
         if(primerosDeclVarLocales.contains(tokenAct.getType())){
             declVarLocales();
             declVarLocalesE();
@@ -306,7 +306,7 @@ public class SyntacticalAnalyzer {
             return;
         }else{
                 throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'Str', 'Bool', 'Int', 'ClassID', 'Array' " +
-                        "'{', '}', ';' , 'ObjectID', 'self', '(' , 'if', 'for', 'while' o  'ret' ." +
+                        "'{', '}', ';' , 'id', 'self', '(' , 'if', 'for', 'while' o  'ret' ." +
                         " Se encontro "
                         + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
@@ -317,16 +317,14 @@ public class SyntacticalAnalyzer {
      */
 
     public void sentenciaE() {
-        //print token
-        System.out.println(tokenAct.getType());
-        List<String> primerosSentencia = List.of("semicolon", "ObjectID" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace","pret" );
+        List<String> primerosSentencia = List.of("semicolon", "id" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
         if (primerosSentencia.contains(tokenAct.getType())) {
             sentencia();
             sentenciaE();
         } else if (tokenAct.getType().equals("closeBrace")) {
             return;
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ';' , 'ObjectID', 'self', '(' , 'if', 'for', 'while' , 'ret' o '}'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ';' , 'id', 'self', '(' , 'if', 'for', 'while' , 'ret' o '}'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
     }
@@ -548,10 +546,10 @@ public class SyntacticalAnalyzer {
 
     public void sentencia() {
 
-        List<String> primerosSentencia = List.of("semicolon", "ObjectID" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
+        List<String> primerosSentencia = List.of("semicolon", "id" ,"pself" ,"openParen" ,"pif" ,"pwhile", "pfor", "openBrace"," pret" );
         if (tokenAct.getType().equals("semicolon")) {
             siguienteTerminal(tokenAct,List.of("semicolon"));
-        } else if (tokenAct.getType().equals("ObjectID") || tokenAct.getType().equals("pself")) {
+        } else if (tokenAct.getType().equals("id") || tokenAct.getType().equals("pself")) {
             asignacion();
             siguienteTerminal(tokenAct,List.of("semicolon"));
         } else if (tokenAct.getType().equals("openParen")) {
@@ -585,7 +583,7 @@ public class SyntacticalAnalyzer {
             siguienteTerminal(tokenAct,List.of("pret"));
             sentenciaFR();
         } else {
-                throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ';' , 'ObjectID', 'self', '(' , 'if', 'for', 'while' , 'ret' o '{'. Se encontro "
+                throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba ';' , 'id', 'self', '(' , 'if', 'for', 'while' , 'ret' o '{'. Se encontro "
                         + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -596,7 +594,7 @@ public class SyntacticalAnalyzer {
       */
 
     public void sentenciaFE() {
-        List<String>  siguientesSentenciaFE = List.of("semicolon", "ObjectID", "pself", "openParen", "pif", "pwhile","pfor","openBrace","pret","closeBrace");
+        List<String>  siguientesSentenciaFE = List.of("semicolon", "id", "pself", "openParen", "pif", "pwhile","pfor","openBrace","pret","closeBrace");
         if (tokenAct.getType().equals("pelse")){
             siguienteTerminal(tokenAct,List.of("pelse"));
             sentencia();
@@ -610,22 +608,21 @@ public class SyntacticalAnalyzer {
 
     /**
      * <SentenciaFR> ::=  <Expresion> semicolon | semicolon
-     * primeros =  sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  ObjectID idclass new semicolon
+     * primeros =  sumOperator substractionOperator notOperator incrementOperator decrementOperator nil ptrue pfalse const_int const_str openParen self  id idclass new semicolon
      */
 
     public void sentenciaFR(){
 
-        List<String> primerosSentenciaFR = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosSentenciaFR = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosSentenciaFR.contains(tokenAct.getType())) {
             expresion();
             siguienteTerminal(tokenAct,List.of("semicolon"));
         } else if (tokenAct.getType().equals("semicolon")) {
             siguienteTerminal(tokenAct,List.of("semicolon"));
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID', 'new' o ';'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID', 'new' o ';'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
-
     }
 
     /**
@@ -651,35 +648,35 @@ public class SyntacticalAnalyzer {
 
     public void asignacion() {
 
-        List<String> primerosAsignacion = List.of("ObjectID", "pself");
+        List<String> primerosAsignacion = List.of("id", "pself");
         if (primerosAsignacion.contains(tokenAct.getType())) {
-            if (tokenAct.getType().equals("ObjectID")) {
+            if (tokenAct.getType().equals("id")) {
                 accesoVarSimple();
-                siguienteTerminal(tokenAct,List.of("assignmentOperator"));
+                siguienteTerminal(tokenAct,List.of("equalOperator"));
                 expresion();
             } else if (tokenAct.getType().equals("pself")) {
                 accesoSelfSimple();
-                siguienteTerminal(tokenAct,List.of("assignmentOperator"));
+                siguienteTerminal(tokenAct,List.of("equalOperator"));
                 expresion();
             }
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'ObjectID' o 'self'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'id' o 'self'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
     }
 
     /**
-     * <AccesoVar-Simple> ::= ObjectID <AccesoVar-SimpleF>
+     * <AccesoVar-Simple> ::= id <AccesoVar-SimpleF>
      */
 
     public void accesoVarSimple() {
 
-        if (tokenAct.getType().equals("ObjectID")) {
-            siguienteTerminal(tokenAct,List.of("ObjectID"));
+        if (tokenAct.getType().equals("id")) {
+            siguienteTerminal(tokenAct,List.of("id"));
             accesoVarSimpleF();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'ObjectID'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'id'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -690,20 +687,18 @@ public class SyntacticalAnalyzer {
      */
 
     public void accesoVarSimpleF() {
-        //print del token para debug
-        System.out.println("Token en accesoVarSimpleF: " + tokenAct.getLexeme() + " (Tipo: " + tokenAct.getType() + ", Linea: " + tokenAct.getLine() + ", Columna: " + tokenAct.getColumn() + ")");
+
         if (tokenAct.getType().equals("dot") || tokenAct.getType().equals("openParen")) {
             encadenadoSimpleE();
         } else if (tokenAct.getType().equals("openBracket")) {
             siguienteTerminal(tokenAct,List.of("openBracket"));
             expresion();
             siguienteTerminal(tokenAct,List.of("closeBracket"));
-        } else if (tokenAct.getType().equals("assignmentOperator")) {
+        } else if (tokenAct.getType().equals("equalOperator")) {
             //caso lambda
-            System.out.println("Lambda de accesoVarSimpleF");
             encadenadoSimpleE(); } // accesoVarSimpleF no deriva en lamda el lamda de sus primeros viene de aca
         else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '.' , '(', '=' o '['. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '.' , '(' o '['. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -717,7 +712,7 @@ public class SyntacticalAnalyzer {
         if(tokenAct.getType().equals("dot")){
             encadenadoSimple();
             encadenadoSimpleE();
-        } else if (tokenAct.getType().equals("assignmentOperator")) {
+        } else if (tokenAct.getType().equals("equalOperator")) {
             return;
         }else {
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '.' . Se encontro "
@@ -744,15 +739,14 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <Encadenado-Simple> ::= dot ObjectID
+     * <Encadenado-Simple> ::= dot id
      */
 
     public void encadenadoSimple() {
 
-
         if (tokenAct.getType().equals("dot")) {
             siguienteTerminal(tokenAct,List.of("dot"));
-            siguienteTerminal(tokenAct,List.of("ObjectID"));
+            siguienteTerminal(tokenAct,List.of("id"));
         } else {
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '.'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
@@ -783,11 +777,11 @@ public class SyntacticalAnalyzer {
 
     public void expresion() {
 
-        List<String> primerosExpresion = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosExpresion = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosExpresion.contains(tokenAct.getType())) {
             expOr();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
     }
@@ -797,12 +791,12 @@ public class SyntacticalAnalyzer {
      */
 
     public void expOr() {
-        List<String> primerosExpor = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosExpor = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosExpor.contains(tokenAct.getType())) {
             expAnd();
             EO();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
     }
@@ -831,12 +825,12 @@ public class SyntacticalAnalyzer {
 
     public void expAnd() {
 
-        List<String> primerosExpAnd = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosExpAnd = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosExpAnd.contains(tokenAct.getType())) {
             expIgual();
             EA();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -866,12 +860,12 @@ public class SyntacticalAnalyzer {
 
     public void expIgual() {
 
-        List<String> primerosExpIgual = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosExpIgual = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosExpIgual.contains(tokenAct.getType())) {
             expCompuesta();
             EI();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -901,12 +895,12 @@ public class SyntacticalAnalyzer {
 
     public void expCompuesta() {
 
-        List<String> primerosExpCompuesta = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosExpCompuesta = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosExpCompuesta.contains(tokenAct.getType())) {
             expAd();
             expCompuestaF();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -937,12 +931,12 @@ public class SyntacticalAnalyzer {
 
     public void expAd() {
 
-        List<String> primerosExpAd = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosExpAd = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosExpAd.contains(tokenAct.getType())) {
             ExpMul();
             EAD();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -976,12 +970,12 @@ public class SyntacticalAnalyzer {
 
     public void ExpMul() {
 
-        List<String> primerosExpMul = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosExpMul = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosExpMul.contains(tokenAct.getType())) {
             expUn();
             EM();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -1012,7 +1006,7 @@ public class SyntacticalAnalyzer {
 
     public void expUn() {
 
-        List<String> primerosExpUn = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID", "ClassID", "pnew");
+        List<String> primerosExpUn = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "pnil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "id", "ClassID", "pnew");
         if (primerosExpUn.contains(tokenAct.getType())) {
             if (tokenAct.getType().equals("sumOperator") || tokenAct.getType().equals("substractionOperator") || tokenAct.getType().equals("notOperator") || tokenAct.getType().equals("incrementOperator") || tokenAct.getType().equals("decrementOperator")) {
                 opUnario();
@@ -1022,11 +1016,11 @@ public class SyntacticalAnalyzer {
                 ExpUnF();
             } else if (tokenAct.getType().equals("pnil") || tokenAct.getType().equals("ptrue") || tokenAct.getType().equals("pfalse") || tokenAct.getType().equals("IntegerLiteral") || tokenAct.getType().equals("StringLiteral")) {
                 literal();
-            } else if (tokenAct.getType().equals("pself") || tokenAct.getType().equals("ObjectID") || tokenAct.getType().equals("ClassID") || tokenAct.getType().equals("pnew")) {
+            } else if (tokenAct.getType().equals("pself") || tokenAct.getType().equals("id") || tokenAct.getType().equals("ClassID") || tokenAct.getType().equals("pnew")) {
                 primario();
             }
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -1038,7 +1032,7 @@ public class SyntacticalAnalyzer {
 
     public void ExpUnF() {
         List<String> primerosExpresion = List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator", "nil", "ptrue", "pfalse", "const_int", "const_str",
-                "openParen", "self",  "ObjectID", "ClassID", "new");
+                "openParen", "self",  "id", "ClassID", "new");
         if(tokenAct.getType().equals("Int")){
             siguienteTerminal(tokenAct,List.of("Int"));
             siguienteTerminal(tokenAct,List.of("closeParen"));
@@ -1047,9 +1041,6 @@ public class SyntacticalAnalyzer {
             expresion();
             siguienteTerminal(tokenAct,List.of("closeParen"));
             expresionParentizadaF();
-        }else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'Int', un operador, 'nil', 'true', 'false', un literal, '(', 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
-                    + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
     }
 
@@ -1143,22 +1134,22 @@ public class SyntacticalAnalyzer {
     }
 
     /**
-     * <Primario>:=  <AccesoSelf > | ObjectID PrimarioF | <Llamada-Metodo-Estatico> | <Llamada-Conclassor >
+     * <Primario>:=  <AccesoSelf > | id PrimarioF | <Llamada-Metodo-Estatico> | <Llamada-Conclassor >
      */
 
     public void primario() {
 
         if (tokenAct.getType().equals("pself")) {
             accesoSelf();
-        } else if (tokenAct.getType().equals("ObjectID")) {
-            siguienteTerminal(tokenAct,List.of("ObjectID"));
+        } else if (tokenAct.getType().equals("id")) {
+            siguienteTerminal(tokenAct,List.of("id"));
             primarioF();
         } else if (tokenAct.getType().equals("ClassID")) {
             llamadaMetodoEstatico();
         } else if (tokenAct.getType().equals("pnew")) {
             llamadaConclassor();
         } else {
-            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'self', 'ObjectID', 'ClassID' o 'new'. Se encontro "
+            throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'self', 'id', 'ClassID' o 'new'. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
 
@@ -1169,17 +1160,11 @@ public class SyntacticalAnalyzer {
      */
 
     public void primarioF() {
-        //sig
-        List<String> siguientes = List.of("multiplicationOperator", "divOperator", "sumOperator", "substractionOperator"
-                ,"equalOperator", "notEqualOperator", "andOperator",  "closeParen", "orOperator",
-                "closeBracket", "semicolon", "greaterThanOperator", "lessThanOperator", "greaterThanOrEqualOperator", "lessThanOrEqualOperator");
         if(tokenAct.getType().equals("openBracket")||tokenAct.getType().equals("dot")){
             accesoVarF2();
         } else if (tokenAct.getType().equals("openParen")) {
             argumentosActuales();
             llamadaMetodoF();
-        } else if (siguientes.contains(tokenAct.getType())) {
-            accesoVarF2();
         }else{
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba '{', '.' o '('. Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
@@ -1420,7 +1405,7 @@ public class SyntacticalAnalyzer {
 
      public void argumentosActualesF() {
         List<String> primerosListaExpresiones =List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator",
-                "nil", "ptrue", "pfalse", "const_int", "const_str", "openParen", "pself", "ObjectID" ,"ClassID" ,"pnew");
+                "nil", "ptrue", "pfalse", "const_int", "const_str", "openParen", "pself", "id" ,"ClassID" ,"pnew");
         if(primerosListaExpresiones.contains(tokenAct.getType())){
             listaExpresiones();
             siguienteTerminal(tokenAct,List.of("closeParen"));
@@ -1428,7 +1413,7 @@ public class SyntacticalAnalyzer {
             siguienteTerminal(tokenAct,List.of("closeParen"));
         }else{
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '+', '-', '!', '++', '--', 'nil', 'true', 'false', 'const_str'," +
-                    " 'const_str', '(', 'self', 'nil',  '+' , 'ObjectID', 'ClassID', 'new' o  '-' . Se encontro "
+                    " 'const_str', '(', 'self', 'nil',  '+' , 'id', 'ClassID', 'new' o  '-' . Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
      }
@@ -1440,16 +1425,11 @@ public class SyntacticalAnalyzer {
      public void listaExpresiones() {
          List<String> primerosExpresion = List.of("sumOperator", "substractionOperator", "notOperator",
                  "incrementOperator", "decrementOperator", "nil", "ptrue", "pfalse", "const_int", "const_str",
-                 "openParen", "self",  "ObjectID", "ClassID", "new");
+                 "openParen", "self",  "id", "ClassID", "new");
          if(primerosExpresion.contains(tokenAct.getType())){
              expresion();
              listaExpresionesF();
          }
-            else{
-                throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '+', '-', '!', '++', '--', 'nil', 'true', 'false', 'const_str'," +
-                        " 'const_str', '(', 'self', 'nil',  '+' , 'ObjectID', 'ClassID', 'new' o  '-' . Se encontro "
-                        + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
-            }
      }
 
      /**
@@ -1486,16 +1466,16 @@ public class SyntacticalAnalyzer {
      }
 
      /**
-      * <EncadenadoF> ::= ObjectID <EncadenadoF2>
+      * <EncadenadoF> ::= id <EncadenadoF2>
       */
 
      public void encadenadoF() {
 
-         if (tokenAct.getType().equals("ObjectID")) {
-             siguienteTerminal(tokenAct,List.of("ObjectID"));
+         if (tokenAct.getType().equals("id")) {
+             siguienteTerminal(tokenAct,List.of("id"));
              encadenadoF2();
          } else {
-             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'ObjectID'. Se encontro "
+             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'id'. Se encontro "
                      + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
          }
 
