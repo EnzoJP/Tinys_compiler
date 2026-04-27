@@ -1284,8 +1284,16 @@ public class SyntacticalAnalyzer {
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
      }
+    /** <Llamada-Metodo>::= ObjectID <Argumentos-Actuales> <Llamada-MétodoF>
+     *
+     */
+    public void llamadaMetodo(){
+        siguienteTerminal(tokenAct,List.of("ObjectID"));
+        argumentosActuales();
+        llamadaMetodoF();
+    }
 
-     /**
+    /**
       * <Llamada-MetodoF>:= <Encadenado>  | lambda
       */
 
@@ -1313,7 +1321,7 @@ public class SyntacticalAnalyzer {
          if (tokenAct.getType().equals("ClassID")) {
                  siguienteTerminal(tokenAct,List.of("ClassID"));
                  siguienteTerminal(tokenAct,List.of("dot"));
-                 llamadaMetodoF();
+                 llamadaMetodo();
                  llamadaMetodoEstaticoF();
              } else {
                  throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba 'ClassID'. Se encontro "
@@ -1420,7 +1428,7 @@ public class SyntacticalAnalyzer {
 
      public void argumentosActualesF() {
         List<String> primerosListaExpresiones =List.of("sumOperator", "substractionOperator", "notOperator", "incrementOperator", "decrementOperator",
-                "nil", "ptrue", "pfalse", "const_int", "const_str", "openParen", "pself", "ObjectID" ,"ClassID" ,"pnew");
+                "nil", "ptrue", "pfalse", "IntegerLiteral", "StringLiteral", "openParen", "pself", "ObjectID" ,"ClassID" ,"pnew");
         if(primerosListaExpresiones.contains(tokenAct.getType())){
             listaExpresiones();
             siguienteTerminal(tokenAct,List.of("closeParen"));
@@ -1428,7 +1436,7 @@ public class SyntacticalAnalyzer {
             siguienteTerminal(tokenAct,List.of("closeParen"));
         }else{
             throw  new SyntacticExceptions("ERROR SINTACTICO Se esperaba un operador, '+', '-', '!', '++', '--', 'nil', 'true', 'false', 'const_str'," +
-                    " 'const_str', '(', 'self', 'nil',  '+' , 'ObjectID', 'ClassID', 'new' o  '-' . Se encontro "
+                    " 'const_int', '(', 'self', 'ObjectID', 'ClassID', o 'new' . Se encontro "
                     + tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
         }
      }
@@ -1439,7 +1447,7 @@ public class SyntacticalAnalyzer {
 
      public void listaExpresiones() {
          List<String> primerosExpresion = List.of("sumOperator", "substractionOperator", "notOperator",
-                 "incrementOperator", "decrementOperator", "nil", "ptrue", "pfalse", "const_int", "const_str",
+                 "incrementOperator", "decrementOperator", "nil", "ptrue", "pfalse","IntegerLiteral", "StringLiteral",
                  "openParen", "self",  "ObjectID", "ClassID", "new");
          if(primerosExpresion.contains(tokenAct.getType())){
              expresion();
