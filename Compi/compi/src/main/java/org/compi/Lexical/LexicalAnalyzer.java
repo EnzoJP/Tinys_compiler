@@ -19,7 +19,7 @@ public class LexicalAnalyzer {
     private final File sourceFile;
     private static final String[] KEYWORDS = {
             "class", "impl", "else", "if", "false", "true", "while", "ret",
-            "nil", "new", "fn", "st", "pub", "self", "div", "for", "in","start", "Str", "void", "Int", "Bool", "Array"
+            "nil", "new", "fn", "st", "pub", "self", "div", "for", "in", "Str", "void", "Int", "Bool", "Array"
     };
     private final BufferedReader reader;   // lector del archivo fuente
     private final LinkedList<Character> buffer = new LinkedList<>(); // buffer del lexema actual
@@ -31,6 +31,8 @@ public class LexicalAnalyzer {
     // columna donde empezó el token actual
     private int tokenStartColumn;
     private int tokenStartLine;
+
+    private Boolean isStart = false;
 
 
     public LexicalAnalyzer(File sourceFile) {
@@ -189,6 +191,19 @@ public class LexicalAnalyzer {
         }
 
         String lexeme = flushBuffer();
+        if (lexeme.equals("start")) {
+            if(isStart==false){
+                if( (char) lookAhead == '{'){
+                    isStart=true;
+                    return makeToken(String.valueOf(Keywords.pstart),lexeme);
+                }
+            }
+            else{
+               return makeToken(String.valueOf(Identificators.ObjectID), lexeme);
+            }
+        }
+
+
         if (isKeyword(lexeme)) {
 
             switch (lexeme){
@@ -209,7 +224,6 @@ public class LexicalAnalyzer {
                 case "div": return makeToken(String.valueOf(Keywords.pdiv), lexeme);
                 case "for": return makeToken(String.valueOf(Keywords.pfor), lexeme);
                 case "in": return makeToken(String.valueOf(Keywords.pin), lexeme);
-                case "start": return makeToken(String.valueOf(Keywords.pstart), lexeme);
                 case "Str": return makeToken(String.valueOf(Keywords.pstr), lexeme);
                 case "void": return makeToken(String.valueOf(Keywords.pvoid), lexeme);
                 case "Int": return makeToken(String.valueOf(Keywords.pint), lexeme);
