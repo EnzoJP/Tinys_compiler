@@ -5,7 +5,9 @@ import org.compi.Lexical.token;
 import java.io.File;
 import java.util.List;
 import org.compi.Syntactic.SyntacticExceptions;
-
+import org.compi.Semantic.SymbolTable.*;
+import org.compi.Semantic.SymbolTable.Class;
+import org.compi.Semantic.SymbolTable.SemanticExceptions;
 /**
  * Clase que representa el analizador Sintactico
  * @author Enzo Palau
@@ -95,6 +97,9 @@ public class SyntacticalAnalyzer {
 
     public void Class() {
         siguienteTerminal(tokenAct,List.of("pclass"));
+        Class clase = new Class(lexicalAnalyzer.nextToken());
+        SymbolTable.addClass(clase);
+        SymbolTable.setCurrentClass(clase);
         siguienteTerminal(tokenAct,List.of("ClassID"));
         classF();
     }
@@ -173,8 +178,13 @@ public class SyntacticalAnalyzer {
      * <Herencia> ::= colon <Tipo>
      */
 
-    public void herencia() {
+    public void herencia() throws SemanticExceptions{
         siguienteTerminal(tokenAct,List.of("colon"));
+        if(!lexicalAnalyzer.nextToken().getType().equals("ClassID")){
+            throw new SemanticExceptions("ERROR SEMANTICO DECLARACIONES: El objeto a heredar debe ser una clase Se encontro " +
+                                        tokenAct.getLexeme() + " en la línea " + tokenAct.getLine ()+ ", columna " + tokenAct.getColumn());
+        }
+        SymbolTable.getCurrentClass().setAncestorName(lexicalAnalyzer.nextToken().getLexeme());
         tipo();
     }
 
